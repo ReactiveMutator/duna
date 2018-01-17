@@ -1,4 +1,4 @@
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51678cdeee544edb9d7219ca20b3d214)](https://www.codacy.com/app/garrynsk/duna?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=garrynsk/duna&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/51678cdeee544edb9d7219ca20b3d214)](https://www.codacy.com/app/garrynsk/duna?utm_source=github.com&utm_medium=referral&utm_content=garrynsk/duna&utm_campaign=Badge_Coverage)
 
 # DUNA
 

@@ -29,13 +29,13 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
   }
 */
   private def matcher[A](msg: Message[A]): Task[A] = {
-   // TODO: If executor is shutdown, an error throws. Need to make a state machine
+
       msg match{
               case Exec(function: (() => A)) => {
                     executor.submit(function)
                   }   
               case Suspend() => {
-                    executor.submit(() => waiting()) // pure workaround to stay typesafe. Can I do better???
+                    executor.submit(() => waiting()) 
                   }
               case Stop() => {
                     executor.submit(() => close())

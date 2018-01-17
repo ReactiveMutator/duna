@@ -80,7 +80,7 @@ class QueueSpec extends PropSpec with Matchers with GeneratorDrivenPropertyCheck
       }
     }
   }
-
+  // TODO: separate static Spec
   property("After queue population via enqueue, queue must contain all elements from the array, if its size is more then array.length.") {
     forAll("size") { (size: Int) =>{
 
