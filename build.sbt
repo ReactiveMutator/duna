@@ -20,6 +20,8 @@ version := "0.0.1"
 // mostly only necessary if you intend to publish your library's binaries on a
 // place like Sonatype or Bintray.
 
+resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"
+
 
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
