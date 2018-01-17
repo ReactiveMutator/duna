@@ -40,3 +40,7 @@ jobs:
         
       # run tests!
       - run: cat /dev/null | sbt test:test
+      - run: sbt clean coverage test
+      - run: sbt coverageReport
+      - run: sbt coverageAggregate
+      - run: sbt codacyCoverage
