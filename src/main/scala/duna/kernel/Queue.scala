@@ -25,16 +25,12 @@ case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: 
     (runtime.freeMemory/4/32).toInt // 32bits is Int size, 4 - memory share
   }
 
-  val actualSize = {
-    if(size < 1 ){
-      100000
-      
-    }else if(availableSize < size){
-      availableSize 
-    }else{
-      size
-    }
+  val actualSize = size match {
+    case number if(number < 1) => 100000
+    case number if(number > availableSize) => availableSize
+    case number => number
   }
+  
   
   private def phisicalReadPointer: Int = {
     readPointer  % actualSize
