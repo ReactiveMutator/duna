@@ -2,8 +2,7 @@ package architect
 package duna
 package processing
 
-import java.util.concurrent.{Future, Executors, ExecutorService}
-
+import java.util.concurrent.{Future, Executors, ExecutorService} 
 
 case class Executor(poolSize: Int = Runtime.getRuntime().availableProcessors()){ self =>
 
@@ -12,13 +11,13 @@ case class Executor(poolSize: Int = Runtime.getRuntime().availableProcessors()){
   def isShutdown = 
     pool.isShutdown
 
-  def submit[A](function: () => A):  Task[A] = {
+  def submit[A](function: () => A):  Future[A] = {
       
     val worker = Worker[A](function)
 
-    Task(pool.submit(worker))
+    pool.submit(worker)
       
-    
+ 
   }
 
   def close(): Boolean = {
@@ -26,7 +25,6 @@ case class Executor(poolSize: Int = Runtime.getRuntime().availableProcessors()){
 
      pool.shutdown
 
-     println("Pool was shutted down")
      true
     }else{
      false

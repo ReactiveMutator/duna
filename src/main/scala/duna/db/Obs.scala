@@ -2,15 +2,23 @@ package architect
 package duna
 package db
 
-import java.util.LinkedList
 
-case class Obs[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](cb: A => Unit, val index: Int, 
-                                                                                             val link: Var[A]){
+import duna.kernel.{ Index, Callback }
 
-  def delete(): Boolean = {
+case class Obs[A](callback: Callback[A], index: Index[Int], link: SubscriptionManager[A]){
 
-   // link.stopTrigger(index)
+  def delete: Boolean = {
+
+    link.remove(index)
     true
-  }                                                                                                
+  }   
+
+  def run(value: A): Boolean = {
+
+    callback.run(value)
+    true
+  } 
+                                                                                            
 
 }
+

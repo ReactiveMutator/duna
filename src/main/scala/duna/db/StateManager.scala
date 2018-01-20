@@ -3,11 +3,12 @@ package architect
 package duna
 package db
 
-import java.util.concurrent.{Executors, ExecutorService}
 import java.util.LinkedList
 import scala.collection.mutable.Queue
-import duna.processing.{ Executor, Worker, Task }
+import duna.processing.{ Executor, Worker }
 import StateManager.{Exec, Suspend, Stop, Message, EmptyMessage}
+import java.util.concurrent.Future
+import duna.kernel.Task 
 
 case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors()) {self =>  
 
@@ -28,20 +29,21 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
     registrator.size
   }
 */
-  private def matcher[A](msg: Message[A]): Task[A] = {
 
+  private def matcher[A](msg: Message[A]): Future[A] = {
+   // TODO: If executor is shutdown, an error throws. Need to make a state machine
       msg match{
               case Exec(function: (() => A)) => {
-                    executor.submit(function)
+                   executor.submit(function)
                   }   
               case Suspend() => {
-                    executor.submit(() => waiting()) 
+                    executor.submit(() => waiting()) // pure workaround to stay typesafe. Can I do better???
                   }
               case Stop() => {
                     executor.submit(() => close())
                   }
-              case EmptyMessage() =>{
-                executor.submit(() => doNothing())
+              case EmptyMessage() =>{ // TODO: get rid of
+                  executor.submit(() => doNothing())
               }
                   
             }
@@ -50,11 +52,11 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
 
   def exec[A](msg: Message[A]): Task[A] = {
     
-    val future = matcher(msg)
+    val task = Task(Some(matcher(msg)))
 
-    tasks.enqueue(future)
+    tasks.enqueue(task)
 
-    future
+    task
  
   }
 

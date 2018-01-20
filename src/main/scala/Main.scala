@@ -143,27 +143,15 @@ println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 
 
 */
 
-  import duna.kernel.Queue 
-
-  val queue = Queue[Int](3)
-  queue.enqueue(4)
-  queue.enqueue(6)
-  queue.enqueue(7)
-  queue.enqueue(8)
-  println(queue.dequeue)
-  println(queue.dequeue)
-  println(queue.dequeue)
-  println(queue.dequeue)
 
   implicit val stateManager = StateManager()
 
   def mutator() = {
     val s = Var(0, 2)
 
-    for(i <- 1 to 30){
-      s := i 
-
-    }
+    s := 1
+    s := 2
+    s := 3
 
     println(s())
 

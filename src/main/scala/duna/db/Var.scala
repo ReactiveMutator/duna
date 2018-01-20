@@ -4,69 +4,48 @@ package db
 
 import java.util.UUID 
 
+import duna.kernel.Callback
 import scala.collection.mutable.ListBuffer
-import duna.processing.{ ITask, NoTask, Task}
+import duna.kernel.{ Computation, Task }
+import duna.eventSourcing.{Event, EventManager}
+import duna.db.StateManager.{ Exec }
 
-
-sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](manager: StateManager, private val processor: Processor[A]){ self =>
-
- // private val triggers: ListBuffer[Obs[A]] = ListBuffer[Obs[A]]() // TODO: Find a suitable data structure                                            
+sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](manager: StateManager, private val queueSize: Int = 100){ self =>
+                                           
   private val uuid: UUID = UUID.randomUUID() // the unique identificator for persistence layer
+  private val subscriptionManager: SubscriptionManager[A] = SubscriptionManager()
+  private val eventManager: EventManager[Time, A] = EventManager(queueSize)
+  private val dataManager: DataManager[Time, A] = DataManager()
+  @volatile private var task: Task[Boolean] = Task()
 
-/**  private def playTriggers(newValue: A, triggerList: ListBuffer[Obs[A]]): Boolean = {
-    if(!triggerList.isEmpty){
-      triggerList.foreach(_.cb(newValue))
-      true
-    }else{
-      false
-    }
+  override def toString: String = {
+
+    eventManager.toString
+
   }
 
-  private def removeTrigger(obsIndex: Int): Boolean = {
-    if(!triggers.isEmpty){
-      triggers.remove(obsIndex)
-      true
-    }else{
-      false
-    }
-  }*/
+  def deleteTriggers: Boolean = {
 
+    subscriptionManager.deleteAll
+
+  }
+
+  def onChange(cb: A => Unit): Obs[A] = {
+
+    subscriptionManager.add(Callback(cb))
+
+  }
 /**
-  def stopTrigger(obsIndex: Int): Boolean = {
+  def onComplete(cb: A => Unit): Obs[A] = {
 
-    if(isBusyWriting){
-      
-      newValuesQueue.add(Exec(() => { removeTrigger(obsIndex); read()}))
+    processor.addObs(cb, self)
 
-      false
-    }
-    else {
-      
-      removeTrigger(obsIndex)
-      true  
-    }
   }*/
-
-
-  
-  // if msg in taskQueue is needed type then process on the current thread else switch threads via StateManager
-
-
-  def async(cb: A => Unit): Unit = {
-
-    processor.onComplete(cb)
-
-  }
-
-  def onComplete(cb: A => Unit): Unit = {
-
-    processor.onComplete(cb)
-
-  }
-
+  // Blocking method
   def apply(): Option[A] = {
-  
-    processor.read
+    
+    task.waiting
+    dataManager.read
     
   }
   
@@ -74,18 +53,44 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
 
   def :=(newValue: => A): Boolean = {
 
-    processor.write(newValue)
+    // enqueue new value
+    val event = Event(Time(), Computation(() => newValue))
+    eventManager.emit(event) 
 
+    process
+    
+  }
+
+  private def process: Boolean = {
+    // enqueueing value is independent from processing, unless processing is much slower then enqueueing
+    // in such cases, enqueueing must wait for a processing
+    if(task.isRunning){
+
+      true
+    }else{
+
+      val executable = eventManager.process{(time, value) => { 
+          
+          dataManager.write(time, value)
+          subscriptionManager.run(value)
+          true
+        }
+      }
+
+      task = manager.exec(Exec(executable))
+
+      true
+    }
   }
 }
 
 object Var{
-  
+ 
   def apply[A](value: => A, queueSize: Int = 100)(implicit manager: StateManager): Var[A] = {
     
-    val processor: Processor[A] = Processor[A](manager, value, queueSize)
+    //val processor: Processor[A] = Processor[A](manager, value, queueSize)
 
-    val variable: Var[A] = new Var[A](manager, processor){}
+    val variable: Var[A] = new Var[A](manager, queueSize){}
 
     //manager.registrate(variable)
     variable

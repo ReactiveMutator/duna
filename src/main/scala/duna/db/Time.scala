@@ -1,7 +1,6 @@
 package architect
 package duna
-package processing 
-package time
+package db
 
 case class Time(value: Long = System.nanoTime(), timeFrame: Long = 0) {self =>
 

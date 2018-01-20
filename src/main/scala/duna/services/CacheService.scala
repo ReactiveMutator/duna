@@ -1,18 +1,16 @@
 package architect
 package duna
-package processing
-package storage
+package services 
 
-import duna.processing.time.Time
 
 /**
   Is a wrapper for a data structure, which contains Var history. Its values are of type Event[A], because
   we need to know time of a value occurence. Can't be empty.
 */
 
-case class ChangeLog[A](){self =>
+case class CacheService[Index, A](){self =>
 
-  @volatile private var availableValues: IValue[A] = NoValue()
+  @volatile private var availableValues: IValue[Index, A] = NoValue()
 
   def get: Option[A] = {
 
@@ -23,9 +21,9 @@ case class ChangeLog[A](){self =>
     
   }
 
-  def update(value: A): Boolean = {
+  def update(index: Index, value: A): Boolean = {
 
-    val newValue = Value(Time(), value)
+    val newValue = Value(index, value)
 
     availableValues = newValue
 
@@ -34,6 +32,6 @@ case class ChangeLog[A](){self =>
 
 }
 
-trait IValue[A] 
-case class Value[A](processedTime: Time, value: A) extends IValue[A]
-case class NoValue[A]() extends IValue[A]
+trait IValue[Index, A] 
+case class Value[Index, A](index: Index, value: A) extends IValue[Index, A]
+case class NoValue[Index, A]() extends IValue[Index, A]
