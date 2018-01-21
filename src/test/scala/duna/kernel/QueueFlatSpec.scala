@@ -63,7 +63,7 @@ class QueueFlatSpec extends FlatSpec with Matchers{
   "Dequeue" should "contain all elements from the array, if the queue size is more then available." in {
 
           val array: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7)
-          val queue: Queue[Int] = populateViaEnqueue(array, 222222222)
+          val queue: Queue[Int] = populateViaEnqueue(array, 999999999)
           
           queue.dequeue should be (Left(array(0)))
           queue.dequeue should be (Left(array(1)))

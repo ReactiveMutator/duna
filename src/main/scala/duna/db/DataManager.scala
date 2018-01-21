@@ -11,7 +11,7 @@ case class DataManager[Index, A](){self =>
 
     availableValues match{
       case Value(processedTime, value) => Some(value)
-      case NoValue() => None
+      case _ => None
     }
     
   }
