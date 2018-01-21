@@ -14,12 +14,12 @@ class ExecutorPropSpec extends PropSpec with GeneratorDrivenPropertyChecks with 
 
       val executor: Executor = Executor(number)
           
-          val task = () => 6
-          val future = executor.submit(task)
+      val task = () => 6
+      val future = executor.submit(task)
 
-          (future.get) should be (6)
+      (future.get) should be (6)
 
-          executor.close()
+      executor.close()
     
     }
 
