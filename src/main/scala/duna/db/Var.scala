@@ -4,9 +4,8 @@ package db
 
 import java.util.UUID 
 
-import duna.kernel.Callback
 import scala.collection.mutable.ListBuffer
-import duna.kernel.{ Computation, Task }
+import duna.kernel.{ Callback, Computation, Task }
 import duna.eventSourcing.{Event, EventManager}
 import duna.db.StateManager.{ Exec }
 

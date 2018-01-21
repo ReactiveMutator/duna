@@ -5,95 +5,52 @@ package kernel
 import scala.util.{ Try, Success, Failure }
 import java.util.concurrent.Future
 
-case class Task[A](future: Option[Future[A]] = None){self =>
+case class Task[A](future: Future[A] = null ){self =>
 
   def isRunning: Boolean = {
 
-     future match {
-
-      case Some(task) =>
-
-        !task.isDone
+    if(future.isInstanceOf[Future[A]]){
+          !future.isDone
         
-      case None =>
-        false
-
-     }
-
+    }else{
+      false
+    }
   }
 
   def cancel: Boolean = {
 
-    future match {
-
-      case Some(task) =>
-
-        task.cancel(true)
+    if(future.isInstanceOf[Future[A]]){
+      future.cancel(true)
+    
+    }else{
+      false
+    }  
         
-      case None =>
-
-        true
-
-     }
-
   }
 
   def waiting: Unit = {
     // Sometimes we need to block
     while(!isComplete) {}
-    println("task is complete")
+
   }
 
   def isComplete: Boolean = {
+  
+    if(future.isInstanceOf[Future[A]]){
+      future.isDone
     
-    future match {
-
-      case Some(task) =>
-
-        task.isDone
-        
-      case None =>{
-        println("no task")
-        true
-      }
-
-        
-
-     }
-
+    }else{
+      false
+    }
   } 
 
-  def noTask: Boolean = {
-    
-    future match {
-
-      case Some(task) =>
-
-        false
-        
-      case None =>
-
-        true
-
-     }
-  }
-
   def get: Try[A] = {
-    
-    future match {
 
-      case Some(task) =>
-        if(task != null){
-          Success(task.get)
-        }else{
-          Failure(new Throwable("Can't retreive a value from null future."))
-        }
-        
-        
-      case None =>
+    if(future.isInstanceOf[Future[A]]){
+      Success(future.get)
+    }else{
+      Failure(new Throwable("Can't retreive a value from null future."))
+    }
 
-        Failure(new Throwable("Can't retreive a value from NoTask."))
-
-     }
   }
 }

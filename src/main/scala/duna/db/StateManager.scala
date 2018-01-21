@@ -52,7 +52,7 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
 
   def exec[A](msg: Message[A]): Task[A] = {
     
-    val task = Task(Some(matcher(msg)))
+    val task = Task(matcher(msg))
 
     tasks.enqueue(task)
 

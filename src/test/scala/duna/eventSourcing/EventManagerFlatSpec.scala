@@ -80,6 +80,31 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
   }
 
   
+  "ToString" should "return internal array" in {
+
+    val eventManager = EventManager[Int, Int](3)
+
+    val computation1 = Computation(() => 5)
+    val computation2 = Computation(() => 6)
+    val computation3 = Computation(() => 7)
+
+    eventManager.emit(Event(0, computation1))
+    eventManager.emit(Event(1, computation2))
+    eventManager.emit(Event(2, computation3))
+      
+    eventManager.toString should be ( "Array(Event(0," + computation1.toString + 
+                                      "), Event(1," + computation2.toString + "), Event(2,"
+                                       + computation3.toString + "))")
+
+  }
+
+  "IsEmpty" should "return true if nothing was emitted" in {
+
+    val eventManager = EventManager[Int, Int](3)
+ 
+    eventManager.isEmpty should be (true)
+
+  }
 
 
 }

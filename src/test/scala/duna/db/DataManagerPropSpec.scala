@@ -20,4 +20,5 @@ class DataManagerPropSpec extends PropSpec with GeneratorDrivenPropertyChecks wi
     }
 
   }
+
 }
