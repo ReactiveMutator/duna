@@ -21,12 +21,12 @@ case class DataManager[Index, A](){self =>
     val newValue = Value(index, value)
 
     availableValues = newValue
-    println("write " + value)
+
     true
   }
 
 }
 
-trait IValue[Index, A] 
+sealed trait IValue[Index, A] 
 case class Value[Index, A](index: Index, value: A) extends IValue[Index, A]
 case class NoValue[Index, A]() extends IValue[Index, A]

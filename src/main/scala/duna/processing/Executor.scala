@@ -8,8 +8,12 @@ case class Executor(poolSize: Int = Runtime.getRuntime().availableProcessors()){
 
   private val pool: ExecutorService = Executors.newFixedThreadPool(poolSize)
 
-  def isShutdown = 
+  def isShutdown = {
+
     pool.isShutdown
+
+  }
+    
 
   def submit[A](function: () => A):  Future[A] = {
       
@@ -21,13 +25,17 @@ case class Executor(poolSize: Int = Runtime.getRuntime().availableProcessors()){
   }
 
   def close(): Boolean = {
+
     if(!pool.isShutdown) {
 
      pool.shutdown
 
      true
+
     }else{
+      
      false
+
     }
   }
 
