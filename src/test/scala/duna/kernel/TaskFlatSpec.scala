@@ -5,6 +5,8 @@ import org.scalatest._
 import prop._
 import duna.kernel.Task 
 import duna.processing.Executor
+import scala.util.{ Try, Success, Failure } 
+
 class TaskPropSpec extends FlatSpec with Matchers {
   
   "When Task is running, isRunning" should "return true" in {
@@ -42,11 +44,11 @@ class TaskPropSpec extends FlatSpec with Matchers {
       executor.close()
   }
 
-  "If Task is null, isComplete" should "return false" in {
+  "If Task is null, isComplete" should "return true" in {
       
       val task = Task()
 
-      task.isComplete should be (false)
+      task.isComplete should be (true)
 
   }
 
@@ -68,7 +70,8 @@ class TaskPropSpec extends FlatSpec with Matchers {
       
       val task = Task()
 
-      task.isComplete should be (false)
+      task.cancel
+      task.isRunning should be (false)
 
   }
 
@@ -91,5 +94,20 @@ class TaskPropSpec extends FlatSpec with Matchers {
       task.isRunning should be (false)
 
   }
+
+  "Task get" should "return result" in {
+      
+      val executor: Executor = Executor()
+          
+      val job = () => 6
+      val future = executor.submit(job)
+      val task = Task(future)
+
+   
+      task.get should be (Success(6))
+
+      executor.close()
+  }
+
 
 }

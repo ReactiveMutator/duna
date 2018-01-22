@@ -87,11 +87,10 @@ object Var{
  
   def apply[A](value: => A, queueSize: Int = 100)(implicit manager: StateManager): Var[A] = {
     
-    //val processor: Processor[A] = Processor[A](manager, value, queueSize)
-
     val variable: Var[A] = new Var[A](manager, queueSize){}
 
-    //manager.registrate(variable)
+    variable := value
+
     variable
     
   }

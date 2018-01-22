@@ -9,7 +9,7 @@ import duna.db.{DataManager }
 
 class DataManagerFlatSpec extends FlatSpec with Matchers{
 
-  "DataManager" should "read None if is empty." in {
+  "DataManager" should "read None if it is empty." in {
     
       val dataManager: DataManager[Int, Int] = DataManager()
       

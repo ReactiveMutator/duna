@@ -10,7 +10,7 @@ case class Task[A](future: Future[A] = null ){self =>
   def isRunning: Boolean = {
 
     if(future.isInstanceOf[Future[A]]){
-          !future.isDone
+      !future.isDone
         
     }else{
       false
@@ -30,7 +30,7 @@ case class Task[A](future: Future[A] = null ){self =>
 
   def waiting: Unit = {
     // Sometimes we need to block
-    while(!isComplete) {}
+    while(isRunning) {}
 
   }
 
@@ -40,7 +40,7 @@ case class Task[A](future: Future[A] = null ){self =>
       future.isDone
     
     }else{
-      false
+      true
     }
   } 
 
