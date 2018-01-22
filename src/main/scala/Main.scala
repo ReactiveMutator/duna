@@ -144,29 +144,6 @@ println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 
 */
 
 
-import duna.db.{ Var, StateManager }
-
-  implicit val stateManager = StateManager()
-   
-  def fib(n: Int): Int = {
-
-    val first = Var(0)
-    val second = Var(1)
-    val count = Var(0)
-
-    while(count().get < n){
-        val sum = first().get + second().get
-        first := second().get
-        second := sum
-        count := count().get + 1
-    }
-
-    first().get
-  }
-  
-  time(println("concurrently = " + fib(4)))
-  stateManager.stop()
-
 
   }
 }

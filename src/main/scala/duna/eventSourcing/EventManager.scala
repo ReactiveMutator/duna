@@ -2,7 +2,8 @@ package architect
 package duna
 package eventSourcing
 
-import duna.kernel.{Queue, QueueIssue, Computation, Task}
+import duna.kernel.{Queue, QueueIssue, Computation, Task, Callback}
+import duna.kernel.Timer._ 
 
 case class EventManager[Index, A](queueSize: Int){
 
@@ -50,9 +51,10 @@ case class EventManager[Index, A](queueSize: Int){
 
   }
 
-  def process(work: (Index, A) => Boolean): () => Boolean = () => {
+def process(newEvent: A)(work: (Index, A) => (A, Float))(cb: => Callback[A]): () => (A, Float) = () => {
 
-    var result = false
+    var result = (newEvent, 0.toFloat)
+    
     while(!isEmpty){
  
       result = consume match {
@@ -64,14 +66,16 @@ case class EventManager[Index, A](queueSize: Int){
 
         }
         case Right(error) => {
-          false
+          (newEvent, 0)
         }
       }
     } 
-    
+ 
+    cb.run(result._1)
     result
 
     }
+  
   
 
 }

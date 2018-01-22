@@ -6,8 +6,8 @@ import duna.kernel.{ Callback, Index }
 
 case class SubscriptionManager[A](){ self => 
   
-  @volatile private var observables: List[Obs[A]] = List()
   @volatile private var triggers: List[Obs[A]] = List()
+  @volatile private var completeon: Callback[A] = Callback(a => ())
 
   def hasTriggers: Boolean = {
 
@@ -15,8 +15,21 @@ case class SubscriptionManager[A](){ self =>
 
   }
 
-  def run(value: A): Boolean = {
+  def setCompleteon(cb: Callback[A]): Boolean = {
 
+    completeon = cb
+    true
+
+  }
+
+  def getCompleteon: Callback[A] = {
+
+    val newCompleteon = completeon
+    newCompleteon
+  }
+
+  def run(value: A): Boolean = {
+           
     triggers.foreach(_.run(value))
 
     true
