@@ -2,11 +2,12 @@ package architect
 package duna
 package db
 
-import duna.kernel.{ Callback, Index }
+import scala.collection.immutable.SortedMap
+import duna.kernel.Callback
 
 case class SubscriptionManager[A](){ self => 
   
-  @volatile private var triggers: List[Obs[A]] = List()
+  @volatile private var triggers: SortedMap[Int, Obs[A]] = SortedMap()
   @volatile private var completeon: Callback[A] = Callback(a => ())
 
   def hasTriggers: Boolean = {
@@ -15,7 +16,7 @@ case class SubscriptionManager[A](){ self =>
 
   }
 
-  def setCompleteon(cb: Callback[A]): Boolean = {
+  def complete(cb: Callback[A]): Boolean = {
 
     completeon = cb
     true
@@ -30,15 +31,15 @@ case class SubscriptionManager[A](){ self =>
 
   def run(value: A): Boolean = {
            
-    triggers.foreach(_.run(value))
+    triggers.foreach(tr => tr._2.run(value))
 
     true
 
   }
 
-  def remove(index: Index[Int]): Boolean = {
+  def remove(observer: Obs[A]): Boolean = {
 
-    val newTriggers = triggers.drop(index.value)
+    val newTriggers = triggers - observer.hashCode
 
     triggers = newTriggers
 
@@ -46,11 +47,11 @@ case class SubscriptionManager[A](){ self =>
 
   }
 
-  def add(cb: Callback[A]): Obs[A] = {
+  def trigger(cb: Callback[A]): Obs[A] = {
 
-    val obs: Obs[A] = Obs(cb, Index(triggers.size), self)
-
-    triggers = obs::triggers
+    val obs: Obs[A] = Obs(cb, self)
+    
+    triggers = triggers + (obs.hashCode -> obs)
 
     obs
 

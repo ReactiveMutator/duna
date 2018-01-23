@@ -4,7 +4,7 @@
 
 A very raw library for concurrency in scala. 
 
-It consists of two main elements:
+It consists of two main components:
 
 * val s = Var(smth)
 * val rx = Rx{s() + d()}

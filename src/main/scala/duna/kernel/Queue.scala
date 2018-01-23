@@ -5,6 +5,7 @@ package kernel
 import java.lang.Throwable
 import scala.util.{ Either, Left, Right }
 import scala.runtime.ScalaRunTime._
+import scala.reflect.ClassTag 
 
 trait QueueIssue{
   val message: String
@@ -14,7 +15,7 @@ case class CantDequeueEmptyQueue() extends QueueIssue{
   override val message: String = "Can't dequeue for an empty queue."
 }
 
-case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: ClassManifest](private val size: Int){self =>
+case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: ClassTag](private val size: Int){self =>
 
   @volatile private var writePointer: Int = 0
   @volatile private var readPointer: Int = 0

@@ -4,8 +4,8 @@ package db
 
 import java.util.UUID 
 
-import duna.kernel.Callback
-import duna.kernel.{ Computation, Task }
+import scala.collection.mutable.HashMap
+import duna.kernel.{ Callback, Computation, Task }
 import duna.eventSourcing.{Event, EventManager}
 import duna.db.StateManager.Exec
 import duna.kernel.Timer
@@ -16,6 +16,7 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
   private val subscriptionManager: SubscriptionManager[A] = SubscriptionManager()
   private val eventManager: EventManager[Time, A] = EventManager(queueSize)
   private val dataManager: DataManager[Time, A] = DataManager()
+  private val reactions: HashMap[Int, Rx[A]] = HashMap()
   @volatile private var task: Task[(A, Float)] = Task()
 
   override def toString: String = {
@@ -32,23 +33,32 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
 
   def onChange(cb: A => Unit): Obs[A] = {
 
-    subscriptionManager.add(Callback(cb))
+    subscriptionManager.trigger(Callback(cb))
 
   }
   
   def onComplete(cb: A => Unit): Boolean = {
 
-    subscriptionManager.setCompleteon(Callback(cb))
+    subscriptionManager.complete(Callback(cb))
     true
 
   }
 
   // Blocking method
-  def apply(): Option[A] = {
-    
-    task.waiting
-    dataManager.read
-    
+  def apply()(implicit rx: Rx[A] = null): A = {
+
+    if(rx != null){
+
+      if(reactions.get(rx.hashCode) == None){
+        reactions += rx.hashCode -> rx
+      } 
+
+    }else{
+      task.waiting
+    }
+
+    dataManager.read.get
+
   }
   
  // def connectedTo[B, C](destination: Var[B])(relation: Relation[C]): Edge[A, B, C] = Edge(self, destination, relation)
@@ -76,6 +86,7 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
 
             dataManager.write(time, value)
             subscriptionManager.run(value)
+            reactions.foreach{rx => rx._2.recalc}
             value
           }
           

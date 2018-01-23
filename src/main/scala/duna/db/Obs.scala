@@ -5,11 +5,11 @@ package db
 
 import duna.kernel.{ Index, Callback }
 
-case class Obs[A](callback: Callback[A], index: Index[Int], link: SubscriptionManager[A]){
+case class Obs[A](callback: Callback[A], link: SubscriptionManager[A]){self =>
 
   def delete: Boolean = {
 
-    link.remove(index)
+    link.remove(self)
     true
   }   
 
