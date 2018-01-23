@@ -4,7 +4,7 @@ package duna
 import org.scalatest._
 import prop._
 import Utils._
-import duna.db.{ SubscriptionManager }
+import duna.api.{ SubscriptionManager }
 import duna.kernel.Callback
 
 class SubscriptionManagerFlatSpec extends FlatSpec with Matchers{

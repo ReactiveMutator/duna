@@ -1,13 +1,13 @@
 package architect
 package duna
-package db
+package api
 
 import java.util.UUID 
 
 import scala.collection.mutable.HashMap
 import duna.kernel.{ Callback, Computation, Task, Timer }
 import duna.eventSourcing.{Event, EventManager}
-import duna.db.StateManager.Exec
+import duna.api.StateManager.Exec
 
 sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](manager: StateManager, private val queueSize: Int = 100){ self =>
                                            

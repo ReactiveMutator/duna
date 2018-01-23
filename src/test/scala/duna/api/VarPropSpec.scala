@@ -5,7 +5,7 @@ package duna
 import org.scalatest._
 import prop._
 import Utils._
-import duna.db.{ Var, StateManager }
+import duna.api.{ Var, StateManager }
 /**
 class VarPropSpec extends PropSpec with GeneratorDrivenPropertyChecks with Matchers {
 

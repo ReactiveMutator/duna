@@ -1,10 +1,10 @@
 package architect
 package duna
-package db
+package api
 
 import java.util.concurrent.Callable
 import processing.Worker
-import duna.db.StateManager.{ Exec }
+import duna.api.StateManager.{ Exec }
 import duna.kernel.{Task, Callback}
 
 class Rx[A](manager: StateManager, calculation: Rx[A] => A){ self =>

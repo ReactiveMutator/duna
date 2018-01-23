@@ -5,7 +5,7 @@ package duna
 import org.scalatest._
 import prop._
 import Utils._
-import duna.db.{DataManager }
+import duna.api.{DataManager }
 
 class DataManagerPropSpec extends PropSpec with GeneratorDrivenPropertyChecks with Matchers{
 

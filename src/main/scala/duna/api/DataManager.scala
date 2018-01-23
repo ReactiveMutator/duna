@@ -1,6 +1,6 @@
 package architect
 package duna
-package db
+package api
 
 
 case class DataManager[Index, A](){self =>

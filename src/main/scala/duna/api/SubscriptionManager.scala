@@ -1,6 +1,6 @@
 package architect
 package duna
-package db
+package api
 
 import scala.collection.immutable.SortedMap
 import duna.kernel.Callback

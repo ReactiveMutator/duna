@@ -1,10 +1,6 @@
 package architect
 package duna
 
-
-//import db.Relation
-import db.Var
-import db.StateManager
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -143,7 +139,7 @@ println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 
 
 */
 
-import duna.db.Rx
+import duna.api.{Rx, Var, StateManager}
 implicit val stateManager = StateManager()
 
   val s = Var(4)

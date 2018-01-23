@@ -5,7 +5,7 @@ package duna
 import org.scalatest._
 import prop._
 import Utils._
-import duna.db.{ Var, StateManager }
+import duna.api.{ Var, StateManager }
 
 class VarFlatSpec extends FlatSpec with Matchers{
 
@@ -37,7 +37,7 @@ class VarFlatSpec extends FlatSpec with Matchers{
   "When the Queue is longer then the Array, onComplete" should "return the last written value." in {
     
     implicit val stateManager = StateManager()
-    for(k <- 0 to 100){
+
       val s = Var(1)
 
       for(i <- 0 to 100){
@@ -47,7 +47,6 @@ class VarFlatSpec extends FlatSpec with Matchers{
       }
 
       s.onComplete{value => value should be (100)} 
-    }
     
     stateManager.stop()
 
@@ -56,17 +55,16 @@ class VarFlatSpec extends FlatSpec with Matchers{
   "When the Queue is less then the Array, onComplete" should "return the last written value." in {
     
     implicit val stateManager = StateManager()
-    for(k <- 0 to 100){
-      val s = Var(1, 10)
 
-      for(i <- 0 to 100){
+    val s = Var(1, 10)
 
-        s := i
-  
-      }
+    for(i <- 0 to 100){
 
-      s.onComplete{value => value should be (100)} 
+      s := i
+
     }
+
+    s.onComplete{value => value should be (100)} 
     
     stateManager.stop()
 

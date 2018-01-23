@@ -1,7 +1,7 @@
 
 package architect
 package duna
-package db
+package api
 
 import java.util.LinkedList
 import scala.collection.mutable.Queue
