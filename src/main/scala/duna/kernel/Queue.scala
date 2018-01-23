@@ -6,6 +6,7 @@ import java.lang.Throwable
 import scala.util.{ Either, Left, Right }
 import scala.runtime.ScalaRunTime._
 import scala.reflect.ClassTag 
+import java.util.concurrent.ConcurrentLinkedQueue
 
 trait QueueIssue{
   val message: String
@@ -42,7 +43,8 @@ case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: 
   }
 
   private val store: Array[A] = new Array[A](actualSize) 
-  
+  private val tmpStore: ConcurrentLinkedQueue[A] = new ConcurrentLinkedQueue[A]()
+
   override def toString: String = {
     
     stringOf(store)
@@ -62,20 +64,21 @@ case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: 
   // It can't rewrite elements, if there is no more room for them in the array.
   // So it will leave only k = size start elements.
   def enqueue(value: => A): Either[A, QueueIssue] = {
+    
+    if(writePointer >= actualSize){ // The queue is full, can't rewrite an element which hasn't been read
 
-    store.update(phisicalWritePointer, value) // enqueue a new element
-    
-    val newWritePointer = writePointer + 1 // move writePointer to the next slot
-    writePointer = newWritePointer
-    
-    if(writePointer - 1 >= actualSize){ // The queue is full, can't rewrite an element which hasn't been read
-      
-      dequeue
+      tmpStore.add(value)
 
     }else{
-      Left(value)
+
+      store.update(phisicalWritePointer, value) // enqueue a new element
+
     }
 
+    val newWritePointer = writePointer + 1 // move writePointer to the next slot
+    writePointer = newWritePointer
+
+    Left(value)
 
   }
 
@@ -86,13 +89,24 @@ case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: 
       Right{CantDequeueEmptyQueue()}
 
     }else{
-      
-      val value = store(phisicalReadPointer) // read value
-      val newReadPointer = readPointer + 1 // the next pointer can point at an empty slot, will check on the next dequeue
-      
-      readPointer = newReadPointer
 
-      Left(value)
+      val res = if(readPointer < actualSize || tmpStore.isEmpty){
+
+        val value = store(phisicalReadPointer) // read value
+        value
+      }else{
+        
+        val dec = tmpStore.poll
+
+        store(phisicalReadPointer) = dec
+        dec
+
+      }
+      
+      val newReadPointer = readPointer + 1 // the next pointer can point at an empty slot, will check on the next dequeue
+    
+      readPointer = newReadPointer
+      Left(res)
     }
   }
 

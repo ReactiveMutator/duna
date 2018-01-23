@@ -27,8 +27,8 @@ class QueueFlatSpec extends FlatSpec with Matchers{
         val array: Array[Int] = Array(1, 2, 3, 4, 5)
         val queue: Queue[Int] = populateViaEnqueue(array, 3)
         
-        (queue.toArray: Seq[Int]) should be (Array(4, 5, 3): Seq[Int])
-        queue.dequeue should be (Left(3))
+        (queue.toArray: Seq[Int]) should be (Array(1, 2, 3): Seq[Int])
+        queue.dequeue should be (Left(1))
         
 
   }

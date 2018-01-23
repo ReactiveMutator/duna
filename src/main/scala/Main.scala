@@ -139,16 +139,5 @@ println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 
 
 */
 
-import duna.api.{Rx, Var, StateManager}
-implicit val stateManager = StateManager()
-
-  val s = Var(4)
-  val k = Var(9)
-
-  val rx = Rx[Int]{implicit self => s() + k()}
-  s := 2
-  rx.onChange{println}
-  stateManager.stop()
-
   }
 }

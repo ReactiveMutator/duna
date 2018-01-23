@@ -37,7 +37,7 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
     eventManager.emit(Event(3, Computation(() => 8)))
 
 
-    eventManager.toArray(0).index should be (3)
+    eventManager.toArray(0).index should be (0)
     eventManager.toArray(1).index should be (1)
     eventManager.toArray(2).index should be (2)
 
@@ -72,7 +72,7 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
 
 
     eventManager.consume match{
-      case Left(event) => event.index should be (1)
+      case Left(event) => event.index should be (0)
       case Right(error) => fail()
 
     }
