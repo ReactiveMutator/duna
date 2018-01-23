@@ -5,7 +5,7 @@ import org.scalatest._
 import prop._
 import Utils._
 import duna.db.{ SubscriptionManager }
-import duna.kernel.{ Callback, Index }
+import duna.kernel.Callback
 
 class SubscriptionManagerFlatSpec extends FlatSpec with Matchers{
 
@@ -36,6 +36,23 @@ class SubscriptionManagerFlatSpec extends FlatSpec with Matchers{
       val obs = subscriptionManager.trigger(Callback(callback1)) 
       subscriptionManager.trigger(Callback(callback2))
       subscriptionManager.remove(obs)
+      subscriptionManager.run(1)   
+      count1 should be (0)
+      count2 should be (5)
+
+  }
+
+  "Trigger" should "delete itself from SubscriptionManager." in {
+    
+      val subscriptionManager: SubscriptionManager[Int] = SubscriptionManager()
+      var count1: Int = 0
+      var count2: Int = 0
+      val callback1 = (a: Int) => {count1 = a + 3 }
+      val callback2 = (a: Int) => {count2 = a + 4 }
+
+      val obs = subscriptionManager.trigger(Callback(callback1)) 
+      subscriptionManager.trigger(Callback(callback2))
+      obs.delete
       subscriptionManager.run(1)   
       count1 should be (0)
       count2 should be (5)

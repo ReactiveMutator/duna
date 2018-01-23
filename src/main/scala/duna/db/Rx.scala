@@ -10,16 +10,21 @@ import duna.kernel.{Task, Callback}
 class Rx[A](manager: StateManager, calculation: Rx[A] => A){ self =>
   
   @volatile private var value: A = calculation(self)
-  //@volatile private var task: Task[A] = Task()
   @volatile private var completeon: Callback[A] = Callback(a => ())
 
   def recalc = {
     
-    //task = manager.exec(Exec(() => { value = calculation(self); completeon.run(value); value}))
+    val computed = calculation(self)
+
+    completeon.run(computed)
+
     value = calculation(self)
+    
+    value
+
   }
 
-  def onComplete(cb: A => Unit): Boolean = {
+  def onChange(cb: A => Unit): Boolean = {
 
     completeon = Callback(cb)
     true
@@ -27,7 +32,7 @@ class Rx[A](manager: StateManager, calculation: Rx[A] => A){ self =>
   }
 
   def now: A = {
-   // task.waiting
+
     value
 
   }

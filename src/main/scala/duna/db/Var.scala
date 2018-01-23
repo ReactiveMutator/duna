@@ -5,10 +5,9 @@ package db
 import java.util.UUID 
 
 import scala.collection.mutable.HashMap
-import duna.kernel.{ Callback, Computation, Task }
+import duna.kernel.{ Callback, Computation, Task, Timer }
 import duna.eventSourcing.{Event, EventManager}
 import duna.db.StateManager.Exec
-import duna.kernel.Timer
 
 sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](manager: StateManager, private val queueSize: Int = 100){ self =>
                                            
@@ -18,6 +17,12 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
   private val dataManager: DataManager[Time, A] = DataManager()
   private val reactions: HashMap[Int, Rx[A]] = HashMap()
   @volatile private var task: Task[(A, Float)] = Task()
+
+  def cacheSize: Int = {
+
+    eventManager.cacheSize
+
+  }
 
   override def toString: String = {
 
@@ -44,19 +49,21 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
 
   }
 
-  // Blocking method
-  def apply()(implicit rx: Rx[A] = null): A = {
+  // Unsafe operation, can miss values
+ def now: A = {
 
-    if(rx != null){
+    task.waiting
+    dataManager.read.get
 
-      if(reactions.get(rx.hashCode) == None){
-        reactions += rx.hashCode -> rx
-      } 
+  }
+  // Unsafe operation, can miss values
+  def apply()(implicit rx: Rx[A]): A = {
 
-    }else{
-      task.waiting
-    }
+    if(reactions.get(rx.hashCode) == None){
+      reactions += rx.hashCode -> rx
+    } 
 
+    while(dataManager.read == None){}
     dataManager.read.get
 
   }

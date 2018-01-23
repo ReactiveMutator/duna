@@ -3,7 +3,7 @@ package duna
 package db
 
 
-import duna.kernel.{ Index, Callback }
+import duna.kernel.Callback
 
 case class Obs[A](callback: Callback[A], link: SubscriptionManager[A]){self =>
 

@@ -9,18 +9,18 @@ import duna.db.{ Var, StateManager }
 
 class VarFlatSpec extends FlatSpec with Matchers{
 
-  "Read Var" should "return Some(4)." in {
+  "Read Var" should "return 4." in {
     
     implicit val stateManager = StateManager()
    
     val s = Var(4, 2)
-    s() should be (4)  
+    s.now should be (4)  
 
     stateManager.stop()
 
   }
 
-  "Read Var" should "return Some(2)." in {
+  "Read Var" should "return 2." in {
     
     implicit val stateManager = StateManager()
     
@@ -29,28 +29,68 @@ class VarFlatSpec extends FlatSpec with Matchers{
 
     s := 2  
 
-    s() should be (2) 
+    s.now should be (2) 
     
     stateManager.stop()
 
   }
 
-  "When the Queue is longer then the Array, read Var" should "return Some(6). " in {
+  "When the Queue is longer then the Array, onComplete" should "return the last written value." in {
     
     implicit val stateManager = StateManager()
+    for(k <- 0 to 100){
+      val s = Var(1)
+
+      for(i <- 0 to 100){
+
+        s := i
+  
+      }
+
+      s.onComplete{value => value should be (100)} 
+    }
     
-    for(i <- 0 to 100){
-      val s = Var(1, 8)
+    stateManager.stop()
 
-      s := 2 
-      s := 3 
-      s := 4 
-      s := 5 
-      s := 6 
+  }
 
-      s() should be (6) 
+  "When the Queue is less then the Array, onComplete" should "return the last written value." in {
+    
+    implicit val stateManager = StateManager()
+    for(k <- 0 to 100){
+      val s = Var(1, 10)
+
+      for(i <- 0 to 100){
+
+        s := i
+  
+      }
+
+      s.onComplete{value => value should be (100)} 
+    }
+    
+    stateManager.stop()
+
+  }
+
+
+  "When the Queue is more then the Array, onChange" should "pass through all values." in {
+    
+   implicit val stateManager = StateManager()
+
+    var count = 0
+    
+    val s = Var(1, 1000)
+
+    for(i <- 1 to 100){
+
+      s := i
+
     }
 
+    s.onChange{value => count += value}
+    s.onComplete(a => count should be (5050))
+    
     stateManager.stop()
 
   }
