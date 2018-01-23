@@ -150,6 +150,8 @@ implicit val stateManager = StateManager()
   val k = Var(9)
 
   val rx = Rx[Int]{implicit self => s() + k()}
+  s := 2
+  rx.onChange{println}
   stateManager.stop()
 
   }

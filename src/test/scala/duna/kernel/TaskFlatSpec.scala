@@ -7,7 +7,7 @@ import duna.kernel.Task
 import duna.processing.Executor
 import scala.util.{ Try, Success, Failure } 
 
-class TaskPropSpec extends FlatSpec with Matchers {
+class TaskFlatSpec extends FlatSpec with Matchers {
   
   "When Task is running, isRunning" should "return true" in {
       
