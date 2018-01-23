@@ -1,21 +1,19 @@
 language: scala
 sudo: false
 scala:
-
 - 2.12.4
-
 jdk:
 - oraclejdk8
 cache:
   directories:
-  - $HOME/.ivy2/
-  - $HOME/.sbt/cache/
-  - $HOME/.sbt/boot/
-  - $HOME/.sbt/launchers/
+  - "$HOME/.ivy2/"
+  - "$HOME/.sbt/cache/"
+  - "$HOME/.sbt/boot/"
+  - "$HOME/.sbt/launchers/"
+script:
+- sbt test
+- sbt clean coverage test
+- sbt coverageReport coverageAggregate codacyCoverage
 env:
   matrix:
-    secure: PQgIsR7yv3p9OJq8VJz41MDCmoIaE5Y1XQQER+pXnkuov2gUNZL3MUUFrtgLnNKNEMTqtv8E+EAyhITE8nACeThsws8FFrSla7GO/T6YBVcvJChJc/pQjUO928J9KrE3cyKGV5tR8gQR+/HPy9amBtloCGLhJ7NG0dG/4Lsh7V6kYhabvC1mqO+KZEOVvEYTfXZzZaHKkKYxTJ6+gSTOAFJdpwAOdZDzbgZQWr+Si6B86YZdvvqHSTQoaNM4WntaYvPnmMhqxBtltL1cyRC8eP+/yckeRtjmSefPeyYEMJl0S/kwhaVJmj5vxP+dYGDCi35YVO6nONUzgphc149jTzFmVKPOdM9fgOmjkV5DnCDIicbJlyTKzsa8I0BvEVXqaPc080O8x9innfhGHaEx2oxpxz3mYluC8kSGotfLzkspzJsJLsxshhUJF9WVvkHfHmCn2El+mOBwh6Gw1tAHPBHU9Yrn6iuRtvjdgBIaP02LIg/SvqiGe7NLhI55AkwclTs1T148ghVANaHWWEbs+GwPGHwt11KHZqBvbxfWbhCF8hjVSccDC0K9ipnw3eUJtbUe5xXtU2XJJ7VmimCA/76fTWWz0QRlXrDvn7eelR0qgRl9BHLIcFlGNaZBJSvgfqKBQLXSJwOK7PEqnKAPO/k2H7S4vGDP2PEPQQMgR2w=
-script:
-  - sbt test
-  - sbt clean coverage test 
-  - sbt coverageReport coverageAggregate codacyCoverage
+    secure: T4ommPAX3vD8wU+4duFPrlrHd5WH9sIJemuvusi+nyWmQOkx0x4ybv5iG7opl0NaDvucmjDq/tlfqJwZ0pE6sn41joH4Us4PU5GgvzRmsWsOBKWQ8+h/jJjfh5TMlIQe8CfjzEYNAHzAND27xLgzLAIj8TXE2sBMsptUSzdDU6H8tOpqTMqZKD2mgb3HuqPsgSxE5wWky5eHsmS962oOLNmg0k8yRz4OksOz/+z1pXaTyPB9nc/G6eqpFs5iqJ4IiUOp48P3Y0T4aj82ZuHOeh8bZ9L7uoXxH5Ri/4PYJ6h7b/PgyxO32YLXzLStL3YYuRSKyMH6i3Y/1iKxyOEqpP7Hqcvlm05qyirphUngZ3dRQgxMESI/SvNPnaGRORSot0EWkUyh1o1GAtq7C6DYDscMSGwAHBy8SQK5E5VeWhTejUGq7KxDaqp89htk8xIFrGWpLuGPmLvYaAtNERvKT5PRazgQWFHlMxyAO+854lYJbVHTKNl+K2GFjR5tqAwEGvOswCmbNmxKEytN9GG3lZ2XCGIEyjAM2aWEIqlLGRD40SJ8PPD5GhCt93WGquB1HQk0wBIX6TYCektGg1w5Njb/Pa/7PXapxdyBYaFDPjCArFtBaxeQ6CJplyCzDVRPfe+scqG4u+F54ODiKXHJU6OsmNi0BjsFQOcBNO39Pyo=
