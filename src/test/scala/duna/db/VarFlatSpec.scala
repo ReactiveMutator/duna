@@ -13,7 +13,7 @@ class VarFlatSpec extends FlatSpec with Matchers{
     
     implicit val stateManager = StateManager()
    
-    val s = Var(4, 2)
+    val s = Var(4)
     s.now should be (4)  
 
     stateManager.stop()
@@ -23,9 +23,8 @@ class VarFlatSpec extends FlatSpec with Matchers{
   "Read Var" should "return 2." in {
     
     implicit val stateManager = StateManager()
-    
-    
-    val s = Var(1, 2)
+      
+    val s = Var(1)
 
     s := 2  
 
