@@ -47,12 +47,11 @@ class VarFlatSpec extends FlatSpec with Matchers{
     for(i <- 1 to 100){
 
       s := i
-
+      count = i
     }
 
-    s.onChange{value => count += value; }
-    s.now // block thread
-    count should be (5050)
+    s.onChange{value => count == value; }
+
     stateManager.stop()
 
   }
