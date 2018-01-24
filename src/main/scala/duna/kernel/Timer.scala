@@ -4,12 +4,12 @@ package kernel
 
 case class Timer(){
 
-  def elapsedTime[R](block: => R): (R, Float) = {  
+  def elapsedTime[R](block: => R): Long = {  
       val t0 = System.nanoTime()
       val result = block    
       val t1 = System.nanoTime()
 
-      (result, (t1 - t0).toFloat)
+       t1 - t0
       
   }
 

@@ -71,8 +71,9 @@ As expected, the most performant code is the most straitforward: a mutable appro
 ##### 2 Example
 ```scala
 // Concurrent approach
-  import duna.db.{ Var, StateManager }
+  import duna.api.{ Var, StateManager }
 
+  
   implicit val stateManager = StateManager()
 
   def fib(n: Int): Int = {
@@ -81,25 +82,24 @@ As expected, the most performant code is the most straitforward: a mutable appro
     val second = Var(1)
     val count = Var(0)
 
-    while(count() < n){
-        val secondGet = second()
-        val countGet = count()
-        val sum = first() + secondGet
+    while(count.now < n){
+        val secondGet = second.now
+        val countGet = count.now
+        val sum = first.now + secondGet
         first := secondGet
         second := sum
         count := countGet + 1
     }
 
-    first()
+    first.now
   }
 
-  fib(8)
-
-  stateManager.stop()
+  println(fib(8))
+  
   ```
 ###### Results:
-> Elapsed time: 0.14656524s
-> Memory increased: 6 Mb
+> Elapsed time: 0.05673288s
+> Memory increased: 4 Mb
 
 
 ### Latancy
@@ -133,32 +133,71 @@ As expected, the most performant code is the most straitforward: a mutable appro
 ##### 4 Example
 ```scala
 // Concurrent approach
-  import duna.db.{ Var, StateManager }
+  import duna.api.{ Var, StateManager }
 
   implicit val stateManager = StateManager()
-   
+
   def fib(n: Int): Int = {
 
     val first = Var(0)
     val second = Var(1)
     val count = Var(0)
 
-    while(count() < n){
-        val secondGet = second()
-        val countGet = count()
-        val sum = first() + secondGet
+    while(count.now < n){
+        val secondGet = second.now
+        val countGet = count.now
+        val sum = first.now + secondGet
         first := {Thread.sleep(1000); secondGet}
         second := {Thread.sleep(1000); sum}
         count := {Thread.sleep(1000); countGet + 1}
     }
 
-    first()
+    first.now
   }
+
 
   fib(8)
 
   stateManager.stop()
   ```
 ###### Results:
-> Elapsed time: 8.108357s
-> Memory increased: 5 Mb
+> Elapsed time: 8.06258s
+> Memory increased: 4 Mb
+
+## Power of two example
+
+```scala
+ import duna.api.{ Rx, Var, StateManager }
+
+  implicit val stateManager = StateManager()
+
+  val first = Var(0)
+  val second = Var(0)
+
+
+  val rx = Rx[Int]{implicit rx => first() + second()}
+  
+  first.onChange{value => println(value); second := rx.now}
+  
+  first := 1
+
+  for(i <- 1 to 8){
+    first := second.now 
+    
+  }
+
+  println("End: 2^7 = " + first.now)
+
+  stateManager.stop()
+  ```
+  ###### Results:
+  1
+  1
+  2
+  4
+  8
+  16
+  32
+  64
+  128
+ End: 2^7 = 128

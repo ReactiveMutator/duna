@@ -51,9 +51,9 @@ case class EventManager[Index, A](queueSize: Int){
 
   }
 
-def process(newEvent: A)(work: (Index, A) => (A, Float))(cb: => Callback[A]): () => (A, Float) = () => {
+def process(work: (Index, A) => Long): () => Long = () => {
 
-    var result = (newEvent, 0.toFloat)
+    var result: Long = 0
     
     while(!isEmpty){
  
@@ -66,12 +66,11 @@ def process(newEvent: A)(work: (Index, A) => (A, Float))(cb: => Callback[A]): ()
 
         }
         case Right(error) => {
-          (newEvent, 0)
+          0
         }
       }
     } 
  
-    cb.run(result._1)
     result
 
     }

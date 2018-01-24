@@ -2,23 +2,24 @@ package architect
 package duna
 package api
 
-import java.util.concurrent.Callable
-import processing.Worker
-import duna.api.StateManager.{ Exec }
 import duna.kernel.{Task, Callback}
+import scala.collection.mutable.HashMap
 
-class Rx[A](manager: StateManager, calculation: Rx[A] => A){ self =>
+class Rx[A](calculation: Rx[A] => A){ self =>
   
   @volatile private var value: A = calculation(self)
   @volatile private var completeon: Callback[A] = Callback(a => ())
+  private val reactions: HashMap[Int, Rx[A]] = HashMap()
 
-  def recalc = {
+  def recalc: A = synchronized{
     
     val computed = calculation(self)
 
+    value = computed
+
     completeon.run(computed)
 
-    value = calculation(self)
+    reactions.foreach{r => r._2.recalc}
     
     value
 
@@ -31,15 +32,24 @@ class Rx[A](manager: StateManager, calculation: Rx[A] => A){ self =>
 
   }
 
-  def now: A = {
+  def apply()(implicit rx: Rx[A]): A = {
+
+    if(reactions.get(rx.hashCode) == None){
+      reactions += rx.hashCode -> rx
+    } 
 
     value
 
   }
 
+  def now = {
+
+    value
+  }
+
 }
 object Rx{
 
-  def apply[A](calculation: Rx[A] => A)(implicit manager: StateManager): Rx[A] = new Rx(manager, calculation)
+  def apply[A](calculation: Rx[A] => A): Rx[A] = new Rx(calculation)
 
 }

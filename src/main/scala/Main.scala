@@ -139,5 +139,40 @@ println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 
 
 */
 
+val runtime = Runtime.getRuntime()
+
+val usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
+println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
+
+ import duna.api.{ Rx, Var, StateManager }
+
+  implicit val stateManager = StateManager()
+
+  def fib(n: Int): Int = {
+
+    val first = Var(0)
+    val second = Var(1)
+    val count = Var(0)
+
+    while(count.now < n){
+        val secondGet = second.now
+        val countGet = count.now
+        val sum = first.now + secondGet
+        first := {Thread.sleep(1000); secondGet}
+        second := {Thread.sleep(1000); sum}
+        count := {Thread.sleep(1000); countGet + 1}
+    }
+
+    first.now
+  }
+  
+  println(time(fib(8)))
+
+  stateManager.stop()
+
+val usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
+println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 +"Mb");
+
+
   }
 }

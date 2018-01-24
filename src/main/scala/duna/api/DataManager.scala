@@ -3,16 +3,13 @@ package duna
 package api
 
 
-case class DataManager[Index, A](){self =>
+class DataManager[Index, A](index: Index, value: A){self =>
 
-  @volatile private var availableValues: IValue[Index, A] = NoValue()
+  @volatile private var availableValues: Value[Index, A] = Value(index, value)
 
-  def read: Option[A] = {
+  def read: A = {
 
-    availableValues match{
-      case Value(processedTime, value) => Some(value)
-      case _ => None
-    }
+    availableValues.value
     
   }
 
@@ -27,6 +24,10 @@ case class DataManager[Index, A](){self =>
 
 }
 
-sealed trait IValue[Index, A] 
-case class Value[Index, A](index: Index, value: A) extends IValue[Index, A]
-case class NoValue[Index, A]() extends IValue[Index, A]
+object DataManager{
+
+  def apply[Index, A](index: Index, value: A) = new DataManager[Index, A](index, value){}
+
+}
+
+case class Value[Index, A](index: Index, value: A) 

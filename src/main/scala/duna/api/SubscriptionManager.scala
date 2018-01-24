@@ -8,25 +8,11 @@ import duna.kernel.Callback
 case class SubscriptionManager[A](){ self => 
   
   @volatile private var triggers: SortedMap[Int, Obs[A]] = SortedMap()
-  @volatile private var completeon: Callback[A] = Callback(a => ())
 
   def hasTriggers: Boolean = {
 
     triggers.nonEmpty
 
-  }
-
-  def complete(cb: Callback[A]): Boolean = {
-
-    completeon = cb
-    true
-
-  }
-
-  def getCompleteon: Callback[A] = {
-
-    val newCompleteon = completeon
-    newCompleteon
   }
 
   def run(value: A): Boolean = {

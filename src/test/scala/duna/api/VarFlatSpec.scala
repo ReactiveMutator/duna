@@ -34,42 +34,7 @@ class VarFlatSpec extends FlatSpec with Matchers{
 
   }
 
-  "When the Queue is longer then the Array, onComplete" should "return the last written value." in {
-    
-    implicit val stateManager = StateManager()
-
-      val s = Var(1)
-
-      for(i <- 0 to 100){
-
-        s := i
-  
-      }
-
-      s.onComplete{value => value should be (100)} 
-    
-    stateManager.stop()
-
-  }
-
-  "When the Queue is less then the Array, onComplete" should "return the last written value." in {
-    
-    implicit val stateManager = StateManager()
-
-    val s = Var(1, 10)
-
-    for(i <- 0 to 100){
-
-      s := i
-
-    }
-
-    s.onComplete{value => value should be (100)} 
-    
-    stateManager.stop()
-
-  }
-
+ 
 
   "When the Queue is more then the Array, onChange" should "pass through all values." in {
     
@@ -85,9 +50,9 @@ class VarFlatSpec extends FlatSpec with Matchers{
 
     }
 
-    s.onChange{value => count += value}
-    s.onComplete(a => count should be (5050))
-    
+    s.onChange{value => count += value; }
+    s.now // block thread
+    count should be (5050)
     stateManager.stop()
 
   }
