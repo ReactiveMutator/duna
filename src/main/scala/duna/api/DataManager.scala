@@ -2,6 +2,8 @@ package architect
 package duna
 package api
 
+import duna.kernel.Value
+import scala.util.{Try, Success, Failure}
 
 class DataManager[Index, A](index: Index, value: A){self =>
 
@@ -13,13 +15,21 @@ class DataManager[Index, A](index: Index, value: A){self =>
     
   }
 
-  def write(index: Index, value: A): Boolean = {
+  def write(index: Index, value: => A): Try[A] = {
 
-    val newValue = Value(index, value)
+    val calc = Try{value}
+    calc match {
 
-    availableValues = newValue
+      case Success(value) => {
+        val newValue = Value(index, value)
 
-    true
+        availableValues = newValue
+      }
+      case Failure(e) => e
+    }
+    
+
+    calc
   }
 
 }
@@ -30,4 +40,4 @@ object DataManager{
 
 }
 
-case class Value[Index, A](index: Index, value: A) 
+

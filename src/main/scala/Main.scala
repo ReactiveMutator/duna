@@ -148,25 +148,26 @@ println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
 
   implicit val stateManager = StateManager()
 
-  def fib(n: Int): Int = {
-
+  def mutable = {
     val first = Var(0)
-    val second = Var(1)
-    val count = Var(0)
+    val second = Var(0)
 
-    while(count.now < n){
-        val secondGet = second.now
-        val countGet = count.now
-        val sum = first.now + secondGet
-        first := {Thread.sleep(1000); secondGet}
-        second := {Thread.sleep(1000); sum}
-        count := {Thread.sleep(1000); countGet + 1}
+
+    val rx = Rx[Int]{implicit rx => first() + second()}
+    
+    first.onChange{value =>  second := {Thread.sleep(1000); rx.now}}
+    
+    first := {Thread.sleep(1000); 1}
+
+    for(i <- 1 to 8){
+      first := {Thread.sleep(1000); second.now }
+      
     }
 
-    first.now
+    println("End: 2^7 = " + first.now)
   }
   
-  println(time(fib(8)))
+   time(mutable)
 
   stateManager.stop()
 

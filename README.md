@@ -2,12 +2,12 @@
 
 # DUNA
 
-A very raw library for concurrency in scala. 
+A very raw library for concurrency in scala.
 
 It consists of two main components:
 
 * val s = Var(smth)
-* val rx = Rx{s() + d()}
+* val rx = Rx{ s() + d() }
 
 Semantics was borrowed from Li Haoyi's [scala.rx](https://github.com/lihaoyi/scala.rx). So it has some connections with FRP. But only a little. Internally, the library is mainly mutable,
 nevertheless, it is still thread safe.
@@ -26,7 +26,7 @@ nevertheless, it is still thread safe.
 
     }
 
-    s() // Returns the last value.
+    s.now // Returns the last value.
   }
     
   mutator()
@@ -37,7 +37,7 @@ nevertheless, it is still thread safe.
 ## Fibonacci example
 
 Multithreading is not a cure-all for performance problems. But in case of long lasting tasks it can improve a situation significantly.
-Below are simple examples based on Fibonacci sequence. Measures were taken on 4 core AMD A8-4500M APU.
+Below are simple examples based on Fibonacci sequence. Measures were taken on 4 core AMD A8-4500M APU, 16GB DDR3, Arch Linux 1.4, 64-bit.
 As expected, the most performant code is the most straitforward: a mutable approach. But when time comes to latency, multithreading thrives. So that, a thread pool consisted of 3 Vars outperforms mutable variables and the fourth example is three times faster than third.
 
 ### No latency
@@ -124,7 +124,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
     first
   }
 
-  fib(8)
+  println(fib(8))
   ```
 ###### Results:
 > Elapsed time: 24.005672s
@@ -156,7 +156,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
   }
 
 
-  fib(8)
+  println(fib(8))
 
   stateManager.stop()
   ```
@@ -164,7 +164,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
 > Elapsed time: 8.06258s
 > Memory increased: 4 Mb
 
-## Power of two example
+## Fibonacchi with Rx
 
 ```scala
  import duna.api.{ Rx, Var, StateManager }
@@ -192,12 +192,14 @@ As expected, the most performant code is the most straitforward: a mutable appro
   ```
   ###### Results:
   1
+  0
+  1
   1
   2
-  4
+  3
+  5
   8
-  16
-  32
-  64
-  128
- End: 2^7 = 128
+  13
+End: 2^7 = 13
+Elapsed time: 18.091383s
+Memory increased: 5 Mb

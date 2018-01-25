@@ -2,12 +2,12 @@ package architect
 package duna
 package api
 
-import scala.collection.immutable.SortedMap
-import duna.kernel.Callback
+import duna.kernel.Callback 
+import scala.util.{Try, Success, Failure}
 
 case class SubscriptionManager[A](){ self => 
   
-  @volatile private var triggers: SortedMap[Int, Obs[A]] = SortedMap()
+  @volatile private var triggers: Seq[Obs[A]] = Seq()
 
   def hasTriggers: Boolean = {
 
@@ -15,18 +15,16 @@ case class SubscriptionManager[A](){ self =>
 
   }
 
-  def run(value: A): Boolean = {
-           
-    triggers.foreach(tr => tr._2.run(value))
-
-    true
+  def run(value: A): Seq[Try[Unit]] = {
+    
+    triggers.map{obs => obs.run(value)}
 
   }
 
   def remove(observer: Obs[A]): Boolean = {
 
-    val newTriggers = triggers - observer.hashCode
-
+    val newTriggers = triggers.filter{ value => value.hashCode == observer.hashCode } 
+    
     triggers = newTriggers
 
     true
@@ -37,7 +35,7 @@ case class SubscriptionManager[A](){ self =>
 
     val obs: Obs[A] = Obs(cb, self)
     
-    triggers = triggers + (obs.hashCode -> obs)
+    triggers = triggers ++  Seq(obs)
 
     obs
 

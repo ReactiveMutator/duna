@@ -6,9 +6,11 @@ import java.util.UUID
 
 
 import scala.collection.mutable.HashMap
-import duna.kernel.{ Computation, Task, Callback, Timer }
+import duna.kernel.{ Computation, Task, Callback, Timer, Value, ProcessingTime }
 import duna.eventSourcing.{Event, EventManager}
 import duna.api.StateManager.{ Exec }
+import scala.util.{Try, Success, Failure}
+import java.util.concurrent.{Future, CompletableFuture}
 
 sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](manager: StateManager, private val queueSize: Int = 100, initialValue: => A){ self =>
                                            
@@ -17,7 +19,8 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
   private val eventManager: EventManager[Time, A] = EventManager(queueSize)
   private val dataManager: DataManager[Time, A] = DataManager(Time(), initialValue)
   private val reactions: HashMap[Int, Rx[A]] = HashMap()
-  @volatile private var task: Task[Long] = Task()
+  @volatile private var task: Task[Seq[Try[Unit]]] = 
+            Task(CompletableFuture.completedFuture[Seq[Try[Unit]]](Seq(Success[Unit](()))))
 
 
   override def toString: String = {
@@ -57,48 +60,62 @@ sealed class Var[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A](
   
  // def connectedTo[B, C](destination: Var[B])(relation: Relation[C]): Edge[A, B, C] = Edge(self, destination, relation)
 
-  def :=(newValue: => A): Boolean = {
+  def :=(newValue: => A): ProcessingTime[Task[Seq[Try[Unit]]]] = {
 
     // enqueue new value
     val event = Event(Time(), Computation(() => newValue))
+    
     eventManager.emit(event) 
-    process(newValue)
 
+    val work = process
+
+    reactions.map{rx => rx._2.addTask(work.result)}
+    
+    work
   }
 
-  private def process(newEvent: => A): Boolean = {
-    // enqueueing value is independent from processing, unless processing is much slower then enqueueing
-    // in such cases, enqueueing must wait for a processing
-    if(task.isRunning){
+  private def createExecutable = {
+      eventManager.process{(time: Time, value: A) => { 
 
-      true
-    }else{
-     //   println("restart")
-      //  println("eventManager.isEmpty = " + eventManager.isEmpty)
-      val executable = eventManager.process{(time: Time, value: A) => { 
-          Timer().elapsedTime{
+      val written = dataManager.write(time, value)
 
-            val written = dataManager.write(time, value)
-
-            if(written){
-              
-              reactions.foreach{rx => rx._2.recalc}
-              subscriptionManager.run(value)
-
-            }
-            
-            value
-          }
+      val res: Seq[Try[Unit]] = written match {
+        
+        case Success(value) => {
           
+          val subscriptionRes = subscriptionManager.run(value)
+
+          subscriptionRes
+
+        }
+        case Failure(e) => {
+
+          Seq(Failure(e))
+        
         }
       }
-      
-      
-      task = manager.exec(Exec(executable))
-      
-      true
+      Seq(written.asInstanceOf[Try[Unit]]) ++ res
     }
   }
+}
+
+  private def process: ProcessingTime[Task[Seq[Try[Unit]]]] = {
+
+    if(task.isRunning){
+
+      ProcessingTime(0, task)
+      
+    }else{
+
+      val processing = Timer().elapsedTime{manager.exec(Exec{createExecutable})}
+
+      task = processing.result
+      
+      processing
+      
+    }
+  }
+  
 }
 
 object Var{

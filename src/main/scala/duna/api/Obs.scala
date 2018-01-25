@@ -4,6 +4,7 @@ package api
 
 
 import duna.kernel.Callback
+import scala.util.{Try, Success, Failure}
 
 case class Obs[A](callback: Callback[A], link: SubscriptionManager[A]){self =>
 
@@ -13,10 +14,10 @@ case class Obs[A](callback: Callback[A], link: SubscriptionManager[A]){self =>
     true
   }   
 
-  def run(value: A): Boolean = {
+  def run(value: A): Try[Unit] = {
 
-    callback.run(value)
-    true
+    Try(callback.run(value))
+    
   } 
                                                                                             
 

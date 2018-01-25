@@ -4,11 +4,11 @@ package eventSourcing
 
 import duna.kernel.{Queue, QueueIssue, Computation, Task, Callback}
 import duna.kernel.Timer._ 
+import scala.util.{Try, Success, Failure}
 
 case class EventManager[Index, A](queueSize: Int){
 
   private val eventQueue: Queue[Event[Index, A]] = new Queue[Event[Index, A]](queueSize)
-
 
   override def toString: String = {
 
@@ -17,7 +17,7 @@ case class EventManager[Index, A](queueSize: Int){
   }
 
   def emit(event: Event[Index, A]): Either[Event[Index, A], QueueIssue] = {
-    
+
     eventQueue.enqueue(event)
   }
 
@@ -40,41 +40,42 @@ case class EventManager[Index, A](queueSize: Int){
 
   }
 
-  def foreach(function: Event[Index, A] => Unit) = {
+  def map(function: Event[Index, A] => Unit): Seq[Unit] = {
 
-    eventQueue.foreach(function)
+    eventQueue.map(function)
   }
-  
+
   def toArray: Array[Event[Index, A]] = {
 
     eventQueue.toArray
 
   }
+  // one thread at a time
+  def process(work: (Index, A) =>  Seq[Try[Unit]]): () =>  Seq[Try[Unit]] = () => {
 
-def process(work: (Index, A) => Long): () => Long = () => {
-
-    var result: Long = 0
+    var result:   Seq[Try[Unit]] = Seq(Failure(new Throwable("error")))
     
     while(!isEmpty){
  
       result = consume match {
         case Left(event: Event[Index, A]) => {
           
-          val computation = event.computation.exec
           
-          work(event.index, computation)
-
+            val computation = event.computation.exec
+            work(event.index, computation)
+          
+            
         }
+        
         case Right(error) => {
-          0
+         Seq(Failure(new Throwable(error.toString)))
         }
       }
     } 
- 
+
     result
 
     }
-  
   
 
 }
