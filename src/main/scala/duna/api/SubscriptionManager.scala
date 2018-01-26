@@ -23,7 +23,7 @@ case class SubscriptionManager[A](){ self =>
 
   def remove(observer: Obs[A]): Boolean = {
 
-    val newTriggers = triggers.filter{ value => value.hashCode == observer.hashCode } 
+    val newTriggers = triggers.filter{ value => value.hashCode != observer.hashCode } 
     
     triggers = newTriggers
 

@@ -93,7 +93,7 @@ class QueueFlatSpec extends FlatSpec with Matchers{
           val array: Array[Int] = Array(1, 2, 3, 4, 5)
           val queue: Queue[Int] = populateViaEnqueue(array, 5)
           var i = 0
-          queue.foreach{element => element should be (array(i)); i += 1}  
+          queue.map{element => element should be (array(i)); i += 1}  
 
   }
 

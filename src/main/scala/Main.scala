@@ -3,6 +3,7 @@ package duna
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import duna.api.{ Rx, Var, StateManager }
 
 object Main {
 
@@ -144,7 +145,6 @@ val runtime = Runtime.getRuntime()
 val usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
 
- import duna.api.{ Rx, Var, StateManager }
 
   implicit val stateManager = StateManager()
 
@@ -155,12 +155,12 @@ println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
 
     val rx = Rx[Int]{implicit rx => first() + second()}
     
-    first.onChange{value =>  second := {Thread.sleep(1000); rx.now}}
+    first.onChange{value => println(value); {Thread.sleep(1000); second := rx.now}}
     
     first := {Thread.sleep(1000); 1}
 
     for(i <- 1 to 8){
-      first := {Thread.sleep(1000); second.now }
+      first := {Thread.sleep(1000); second.now} 
       
     }
 
@@ -168,6 +168,7 @@ println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
   }
   
    time(mutable)
+
 
   stateManager.stop()
 

@@ -28,7 +28,7 @@ nevertheless, it is still thread safe.
 
     s.now // Returns the last value.
   }
-    
+
   mutator()
 
   stateManager.stop() // Stops threadpool which works under the hood
