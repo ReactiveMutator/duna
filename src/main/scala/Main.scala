@@ -148,27 +148,22 @@ println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
 
   implicit val stateManager = StateManager()
 
-  def mutable = {
-    val first = Var(0)
-    val second = Var(0)
-
-
-    val rx = Rx[Int]{implicit rx => first() + second()}
+    var count = 0
+    val a = Var(1); val b = Var(2)
+    def mkRx(i: Int) = Rx[Int]{implicit rx => count += 1; i + b() }
     
-    first.onChange{value => println(value); {Thread.sleep(1000); second := rx.now}}
     
-    first := {Thread.sleep(1000); 1}
-
-    for(i <- 1 to 8){
-      first := {Thread.sleep(1000); second.now} 
-      
+    val c = Rx[Int]{implicit rx => 
+       val newRx =mkRx(a()) 
+       newRx()
     }
 
-    println("End: 2^7 = " + first.now)
-  }
-  
-   time(mutable)
+    val obs = c.onChange(println)
+   // println(c.now +", b = " + b.now + ", a = " + a.now + ", " + count)
+    a := 4
 
+   // println(c.now +", b = " + b.now + ", a = " + a.now + ", " + count)
+    b := 3
 
   stateManager.stop()
 

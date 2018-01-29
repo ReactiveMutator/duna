@@ -15,7 +15,7 @@ case class SubscriptionManager[A](){ self =>
 
   }
 
-  def run(value: A): Seq[Try[Unit]] = {
+  def run(value: A): Seq[Try[A]] = {
     
     triggers.map{obs => obs.run(value)}
 

@@ -79,6 +79,73 @@ class QueueFlatSpec extends FlatSpec with Matchers{
 
   }
 
+ "Read" should "contain the head of the array." in {
+
+          val array: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7)
+          val queue: Queue[Int] = populateViaEnqueue(array, 5)
+          
+          queue.read should be (Left(array(0)))
+          queue.read should be (Left(array(0)))
+          queue.dequeue should be (Left(array(0)))
+          queue.read should be (Left(array(1)))
+          queue.dequeue should be (Left(array(1)))
+          queue.read should be (Left(array(2)))
+          queue.dequeue should be (Left(array(2)))
+          queue.read should be (Left(array(3)))
+
+  }
+"hasNext" should "check if the next after the head element exists." in {
+
+          val array: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7)
+          val queue: Queue[Int] = populateViaEnqueue(array, 10)
+          
+          queue.hasNext should be (true)
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(0)))
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(1)))
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(2)))
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(3)))
+          queue.dequeue should be (Left(array(4)))
+          queue.dequeue should be (Left(array(5)))
+          queue.dequeue should be (Left(array(6)))
+          queue.hasNext should be (false)
+
+  }
+
+  "hasNext" should "be false." in {
+
+          val array: Array[Int] = Array(1)
+          val queue: Queue[Int] = populateViaEnqueue(array, 10)
+          
+          queue.dequeue should be (Left(array(0)))
+          queue.hasNext should be (false)
+
+  }
+
+  "ReadNext" should "check if the next after the head element exists, if an array is larger then the queue." in {
+
+          val array: Array[Int] = Array(1, 2, 3, 4, 5, 6, 7)
+          val queue: Queue[Int] = populateViaEnqueue(array, 3)
+          
+          queue.hasNext should be (true)
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(0)))
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(1)))
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(2)))
+          queue.hasNext should be (true)
+          queue.dequeue should be (Left(array(3)))
+          queue.dequeue should be (Left(array(4)))
+          queue.dequeue should be (Left(array(5)))
+          queue.dequeue should be (Left(array(6)))
+          queue.hasNext should be (false)
+
+  }
+
   "ToString" should "return internal array" in {
 
           val array: Array[Int] = Array(1, 2, 3, 4, 5)

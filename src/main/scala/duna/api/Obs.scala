@@ -14,9 +14,12 @@ case class Obs[A](callback: Callback[A], link: SubscriptionManager[A]){self =>
     true
   }   
 
-  def run(value: A): Try[Unit] = {
+  def run(value: A): Try[A] = {
 
-    Try(callback.run(value))
+    Try(callback.run(value)) match{
+      case Success(smth) => Success(value)
+      case Failure(error) => Failure(error)
+    }
     
   } 
                                                                                             

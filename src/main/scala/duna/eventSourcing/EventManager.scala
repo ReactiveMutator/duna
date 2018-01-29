@@ -27,6 +27,10 @@ case class EventManager[Index, A](queueSize: Int){
     
   }
 
+  def read: Either[Event[Index, A], QueueIssue] = {
+    
+       eventQueue.read 
+  }
 
   def isEmpty: Boolean = {
 
@@ -51,29 +55,50 @@ case class EventManager[Index, A](queueSize: Int){
 
   }
   // one thread at a time
-  def process(work: (Index, A) =>  Seq[Try[Unit]]): () =>  Seq[Try[Unit]] = () => {
+  def process[B](work: (Index, A) =>  Seq[B]): () =>  Seq[B] = () => {
 
-    var result:   Seq[Try[Unit]] = Seq(Failure(new Throwable("error")))
+    var result:   Seq[B] = Seq()
     
-    while(!isEmpty){
- 
-      result = consume match {
-        case Left(event: Event[Index, A]) => {
-          
-          
-            val computation = event.computation.exec
-            work(event.index, computation)
-          
-            
+      while(!isEmpty){
+  
+        val newResult = consume match {
+          case Left(event: Event[Index, A]) => {
+
+            work(event.index, event.computation)
+    
+          } 
+          case Right(error) => { // TODO: count an error
+            Seq()
+          }
         }
-        
-        case Right(error) => {
-         Seq(Failure(new Throwable(error.toString)))
-        }
-      }
-    } 
+        result = result ++ newResult
+      } 
 
     result
+
+    }
+
+
+    def review[B](work: (Index, A) =>  Seq[B]): () =>  Seq[B] = () => {
+
+        var result: Seq[B] = Seq()
+        
+        while(!isEmpty){
+    
+          val newResult = read match {
+            case Left(event: Event[Index, A]) => {
+
+              work(event.index, event.computation)
+      
+            } 
+            case Right(error) => {// TODO: count an error
+            Seq()
+            }
+          }
+          result = result ++ newResult
+        } 
+
+        result
 
     }
   

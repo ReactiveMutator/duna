@@ -82,7 +82,55 @@
       Left(value)
 
     }
+    // do not take an element from the queue
+    def read: Either[A, QueueIssue] = {
+      if(isEmpty){ 
+        
+        Right{CantDequeueEmptyQueue()}
 
+      }else{
+          val res = if(readPointer < actualSize || tmpStore.isEmpty){
+
+           store(phisicalReadPointer) // read value
+          
+        }else{
+          
+            tmpStore.element
+
+         
+        }
+        
+          Left(res)
+      }
+    
+    }
+    // do not take an element from the queue
+    def hasNext: Boolean = {
+      if(isEmpty){ 
+        
+        false
+
+      }else{
+        val res = if(readPointer + 1 < actualSize){
+
+            true // read value
+            
+          }else{
+              
+              if(tmpStore.size > 2){
+
+                true
+
+              } else{
+
+                false
+
+              }
+          }
+          res
+      }
+    }
+    
     def dequeue: Either[A, QueueIssue] = {
 
       if(isEmpty){ 

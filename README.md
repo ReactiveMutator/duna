@@ -65,8 +65,8 @@ As expected, the most performant code is the most straitforward: a mutable appro
   fib(8)
   ```
 ###### Results:
-> Elapsed time: 5.561E-5s
-> Memory increased: 0 Mb
+> * Elapsed time: 5.561E-5s
+> * Memory increased: 0 Mb
 
 ##### 2 Example
 ```scala
@@ -98,8 +98,8 @@ As expected, the most performant code is the most straitforward: a mutable appro
   
   ```
 ###### Results:
-> Elapsed time: 0.05673288s
-> Memory increased: 4 Mb
+> * Elapsed time: 0.05673288s
+> * Memory increased: 4 Mb
 
 
 ### Latancy
@@ -127,8 +127,8 @@ As expected, the most performant code is the most straitforward: a mutable appro
   println(fib(8))
   ```
 ###### Results:
-> Elapsed time: 24.005672s
-> Memory increased: 0 Mb
+> * Elapsed time: 24.005672s
+> * Memory increased: 0 Mb
 
 ##### 4 Example
 ```scala
@@ -161,8 +161,8 @@ As expected, the most performant code is the most straitforward: a mutable appro
   stateManager.stop()
   ```
 ###### Results:
-> Elapsed time: 8.06258s
-> Memory increased: 4 Mb
+> * Elapsed time: 8.06258s
+> * Memory increased: 4 Mb
 
 ## Fibonacchi with Rx
 
@@ -186,11 +186,12 @@ As expected, the most performant code is the most straitforward: a mutable appro
     
   }
 
-  println("End: 2^7 = " + first.now)
+  println("End: " + first.now)
 
   stateManager.stop()
   ```
   ###### Results:
+ ``` 
   1
   0
   1
@@ -200,6 +201,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
   5
   8
   13
-End: 2^7 = 13
-Elapsed time: 18.091383s
-Memory increased: 5 Mb
+End: 13
+  ```
+> * Elapsed time: 18.091383s
+> * Memory increased: 5 Mb
