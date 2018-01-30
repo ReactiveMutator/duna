@@ -44,12 +44,13 @@ sealed class Var[A]
   
  // def connectedTo[B, C](destination: Var[B])(relation: Relation[C]): Edge[A, B, C] = Edge(self, destination, relation)
 
-  def :=(newValue: => A): ProcessingTime[Task[Seq[Try[A]]]] = {
+  def :=(newValue: => A)  = {
     val time = Time()
     // enqueue new value
     val event = Event(time, Computation(() => newValue))
     
     eventManager.emit(event) 
+    
      // send to all Rx hashCode of the Var and the task
     computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
     
@@ -63,25 +64,26 @@ sealed class Var[A]
 
       val written = dataManager.write(time, value.exec)
 
-      val res: Seq[Try[A]] = written match {
+      val res = written match {
         
         case Success(inside) => {
-          // asyncronouos send a signal that Var was changed  
-          val computedRes = computed.signal{rx => 
-                rx.newValue(self.hashCode, inside).result.future.get
-            }.flatten
+              // asyncronouos send a signal that Var was changed  
+              val computedRes = computed.signal{rx => 
+                  Try{rx.newValue(self.hashCode, inside)}
+              }.filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
 
-          val subscriptionRes = subscriptionManager.run(inside)
-           computedRes ++ subscriptionRes
+              val subscriptionRes =  subscriptionManager.run(inside).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
 
+              computedRes ++ subscriptionRes 
+     
         }
         case Failure(e) => {
 
-          Seq(Failure(e))
+           Seq(Failure(e))
         
         }
       }
-      Seq(written)
+       res
 
     }
   }

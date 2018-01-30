@@ -55,9 +55,9 @@ case class EventManager[Index, A](queueSize: Int){
 
   }
   // one thread at a time
-  def process[B](work: (Index, A) =>  Seq[B]): () =>  Seq[B] = () => {
+  def process[B](work: (Index, A) =>  Seq[Failure[B]]): () =>  Seq[Failure[B]] = () => {
 
-    var result:   Seq[B] = Seq()
+    var result:   Seq[Failure[B]] = Seq()
     
       while(!isEmpty){
   
@@ -67,8 +67,8 @@ case class EventManager[Index, A](queueSize: Int){
             work(event.index, event.computation)
     
           } 
-          case Right(error) => { // TODO: count an error
-            Seq()
+          case Right(error) => { 
+            println("process" + error.toString); Seq(Failure(new Throwable(error.toString)))
           }
         }
         result = result ++ newResult
@@ -79,9 +79,9 @@ case class EventManager[Index, A](queueSize: Int){
     }
 
 
-    def review[B](work: (Index, A) =>  Seq[B]): () =>  Seq[B] = () => {
+    def review[B](work: (Index, A) =>  Seq[Failure[B]]): () =>  Seq[Failure[B]] = () => {
 
-        var result: Seq[B] = Seq()
+        var result: Seq[Failure[B]] = Seq()
         
         while(!isEmpty){
     
@@ -91,8 +91,8 @@ case class EventManager[Index, A](queueSize: Int){
               work(event.index, event.computation)
       
             } 
-            case Right(error) => {// TODO: count an error
-            Seq()
+            case Right(error) => {
+              println("review" + error.toString); Seq(Failure(new Throwable(error.toString)))
             }
           }
           result = result ++ newResult

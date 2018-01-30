@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import scala.collection.immutable.Map
 import duna.kernel.{ QueueIssue, Queue, CantDequeueEmptyQueue }
 import scala.reflect.ClassTag 
+import scala.util.{Try, Success, Failure}
 
 case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
 
@@ -17,15 +18,22 @@ case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
 
   }
 
-  def put(hash: Index, value: A): Either[Option[A], QueueIssue] = {
+  def put(hash: Index, value: A): Try[A] = {
     
       buffer.get(hash) match{
-        case Some(queue) => queue.enqueue(Some(value)) 
+        case Some(queue) => {
+          queue.enqueue(Some(value)) match{
+            case Left(Some(res)) => Success(res)
+            case Left(None) => {println("Put Didn't read anything from the hash = " + hash); Failure(new Throwable("Didn't read anything from the hash = " + hash))}
+            case Right(error) => {println(error.toString); Failure(new Throwable(error.toString))}
+          }
+        
+        }
         case None => {
-           val newQueue: Queue[Option[A]] = Queue[Option[A]](bufferSize)
+            val newQueue: Queue[Option[A]] = Queue[Option[A]](bufferSize)
             newQueue.enqueue(Some(value))
             update(hash, newQueue)
-            Left(Some(value))
+            Success(value)
         }
       }
   }
@@ -39,18 +47,17 @@ case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
 
   }
 
-  def read(hash: Index): Option[A] = {
+  def read(hash: Index): Try[A] = {
 
       buffer.get(hash) match{
         case Some(queue) => queue.read match{
-                case Left(value) => value
-                case Right(error) => 
-                {
-                  println("buffer.get(hash).read")
-                  None
-                }
+                case Left(Some(value)) => Success(value)
+                case Left(None) => {println("Read Didn't read anything from the hash = " + hash); 
+                Failure(new Throwable("Read Didn't read anything from the hash = " + hash))}
+                case Right(error) =>  {println(error.toString); Failure(new Throwable(error.toString))}
+                
               }
-         case None => None
+         case None => {println("Read Didn't find the hash = " + hash); Failure(new Throwable("Didn't find the hash = " + hash))}
          }
   }
 
@@ -63,15 +70,18 @@ case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
 
   }
 
-  def get(hash: Index): Option[A] = {
+  def get(hash: Index): Try[A] = {
 
       buffer.get(hash) match{
         case Some(queue) => queue.dequeue match{
-            case Left(value) => value
-            case Right(error) => None
-          }
-        case None => None
-      }
+            case Left(Some(value)) => Success(value)
+                case Left(None) => {println("Get Didn't read anything from the hash = " + hash);
+                Failure(new Throwable("Get Didn't read anything from the hash = " + hash))}
+                case Right(error) =>  Failure(new Throwable(error.toString))
+                
+              }
+         case None => Failure(new Throwable("Didn't find the hash = " + hash))
+         }
       
   }
 

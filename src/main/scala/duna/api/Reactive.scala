@@ -16,8 +16,8 @@ abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyR
   protected val subscriptionManager: SubscriptionManager[A] = SubscriptionManager()
   protected val uuid: UUID = UUID.randomUUID() // the unique identificator for persistence layer
 
-  @volatile protected var task: Task[Seq[Try[A]]] = // contains data about current thread
-          Task(CompletableFuture.completedFuture[Seq[Try[A]]](Seq()))
+  @volatile protected var task: Task[Seq[Failure[Any]]] = // contains data about current thread
+          Task(CompletableFuture.completedFuture(Seq()))
 
 
   def onChange(cb: A => Unit): Obs[A] = {
@@ -34,17 +34,17 @@ abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyR
 
   }
 
-  protected def process(executable: () => Seq[Try[A]]): ProcessingTime[Task[Seq[Try[A]]]] = {
+  protected def process(executable: () => Seq[Failure[Any]]): ProcessingTime[Task[Seq[Failure[Any]]]] = {
 
     if(task.isRunning){
 
-        ProcessingTime(0, task)
+        ProcessingTime(0, task )
       
     }else{
 
       val processing = Timer().elapsedTime{manager.exec(Exec{executable})}
 
-      task = processing.result
+      task = processing.result 
       
       processing
       

@@ -8,6 +8,7 @@ import scala.collection.Map
 import scala.util.{Try, Success, Failure}
 import duna.eventSourcing.{EventManager, Event}
 import duna.api.StateManager.{ Exec }
+import java.util.concurrent.{Future, CompletableFuture}
 
 class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: StateManager) extends Reactive[A](manager, bufferSize){ self =>
   
@@ -16,7 +17,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   private val dataManager: DataManager[Time, A] = DataManager(Time(), calculation(self))
   private val computed: ComputedList[Rx, A] = ComputedList()
   
-  def newValue(hashVar: Int, value: A)  = synchronized{
+  def newValue(hashVar: Int, value: A): ProcessingTime[Task[Seq[Failure[Any]]]]  = synchronized{
     
     dependencyManager.put(hashVar, value) 
     println("put " + value)
@@ -35,12 +36,12 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   def dependency(hashVar: Int, init: A): A = {
 
     dependencyManager.read(hashVar) match{
-      case Some(value) => {
+      case Success(value) => {
         println("dependency = " + hashVar + " " + value)
         value
       } 
-      case None => {
-
+      case Failure(error) => {
+          
         dependencyManager.put(hashVar, init)
         init
 
@@ -49,35 +50,35 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   }
 
   
-  def calculateRx(rxValue:  A): Seq[Try[A]] = {
+  def calculateRx(rxValue:  A)  = {
       
-      val computedRes = computed.signal{rx => 
-                rx.newValue(self.hashCode, rxValue).result.future.get
-            }.flatten
+    val computedRes = computed.signal{rx => 
+              Try{rx.newValue(self.hashCode, rxValue)}
+          }
 
-      val subscriptionRes = subscriptionManager.run(rxValue)
-           computedRes ++ subscriptionRes
+    val subscriptionRes =  subscriptionManager.run(rxValue).filter{_.isFailure}
 
+    val written = Seq(dataManager.write(Time(), rxValue)).filter{_.isFailure}
 
-      dataManager.write(Time(), rxValue)
+    val newRes = computedRes ++ written 
 
-      subscriptionRes ++ computedRes
-    
+    newRes ++ subscriptionRes 
           
   }
 
-  def recalc:  () => Seq[Try[A]] = {
+  def recalc  = {
    // If there is an event
    eventManager.review{(time: Time, hashVar: Int) => { 
         // And if there are values 
       if(dependencyManager.hasNext(hashVar)){
         
         // We move the queue to get the next value
-        dependencyManager.get(hashVar) 
+            val dependencyRes = Seq(dependencyManager.get(hashVar)).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]] 
             
-            val calculated = Try{ calculation(self) } 
-
+            val calculated: Try[A] = Try{ calculation(self) }
+            
             val results = calculated match{
+
               case  Success(value) => {
 
                   println("consume")
@@ -87,9 +88,10 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
                 }
               case Failure(error) => Seq(Failure(error))
             }
-            results
+            results.asInstanceOf[Seq[Failure[Any]]]   ++ dependencyRes
+            
         }else{
-          Seq(Failure(new Throwable("Nothing was defined")))
+          println("recalc Nothing was defined"); Seq(Failure(new Throwable("Nothing was defined")))
         }
           
       }
