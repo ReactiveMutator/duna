@@ -55,20 +55,20 @@ case class EventManager[Index, A](queueSize: Int){
 
   }
   // one thread at a time
-  def process[B](work: (Index, A) =>  Seq[Failure[B]]): () =>  Seq[Failure[B]] = () => {
+  def process[B](function: () => Either[Event[Index, A], QueueIssue])(work: (Index, A) =>  Seq[Failure[B]]): () =>  Seq[Failure[B]] = () => {
 
     var result:   Seq[Failure[B]] = Seq()
     
       while(!isEmpty){
   
-        val newResult = consume match {
+        val newResult = function() match {
           case Left(event: Event[Index, A]) => {
 
             work(event.index, event.computation)
     
           } 
           case Right(error) => { 
-            println("process" + error.toString); Seq(Failure(new Throwable(error.toString)))
+             Seq(Failure(new Throwable(error.toString)))
           }
         }
         result = result ++ newResult
@@ -78,29 +78,6 @@ case class EventManager[Index, A](queueSize: Int){
 
     }
 
-
-    def review[B](work: (Index, A) =>  Seq[Failure[B]]): () =>  Seq[Failure[B]] = () => {
-
-        var result: Seq[Failure[B]] = Seq()
-        
-        while(!isEmpty){
-    
-          val newResult = read match {
-            case Left(event: Event[Index, A]) => {
-
-              work(event.index, event.computation)
-      
-            } 
-            case Right(error) => {
-              println("review" + error.toString); Seq(Failure(new Throwable(error.toString)))
-            }
-          }
-          result = result ++ newResult
-        } 
-
-        result
-
-    }
   
 
 }

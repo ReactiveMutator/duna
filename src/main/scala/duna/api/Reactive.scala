@@ -3,15 +3,13 @@ package duna
 package api
 
 import java.util.UUID 
-import scala.collection.mutable.HashMap
-import duna.kernel.{ Computation, Task, Callback, Timer, Value, ProcessingTime }
-import duna.eventSourcing.{Event, EventManager}
+import duna.kernel.{ Task, Callback, Timer, ProcessingTime }
 import duna.api.StateManager.{ Exec }
 import scala.util.{Try, Success, Failure}
-import java.util.concurrent.{Future, CompletableFuture}
+import java.util.concurrent.CompletableFuture
 
 abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A]
-        (manager: StateManager, private val queueSize: Int = 100){ self =>
+        (manager: StateManager, private val queueSize: Int){ self =>
 
   protected val subscriptionManager: SubscriptionManager[A] = SubscriptionManager()
   protected val uuid: UUID = UUID.randomUUID() // the unique identificator for persistence layer

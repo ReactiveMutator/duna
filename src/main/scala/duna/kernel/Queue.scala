@@ -111,7 +111,7 @@
         false
 
       }else{
-        val res = if(readPointer + 1 < actualSize){
+        val res = if(readPointer + 1 < writePointer){
 
             true // read value
             

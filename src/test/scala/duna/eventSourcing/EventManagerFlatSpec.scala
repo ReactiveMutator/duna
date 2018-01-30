@@ -3,10 +3,8 @@ package duna
 
 import org.scalatest._
 import prop._
-import duna.kernel.{Queue, QueueIssue, CantDequeueEmptyQueue }
 import duna.eventSourcing.{ Event, EventManager}
-import scala.util.{ Either, Left, Right }
-import duna.kernel.Computation
+import scala.util.{Try, Success, Failure}
 
 class EventManagerFlatSpec extends FlatSpec with Matchers{
 
@@ -98,6 +96,22 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
  
     eventManager.isEmpty should be (true)
 
+  }
+
+  "Process" should "return tree failures" in {
+
+    val eventManager = EventManager[Int, Int](3)
+
+    eventManager.emit(Event(0, 5))
+    eventManager.emit(Event(1, 6))
+    eventManager.emit(Event(2, 7))
+
+    val result = eventManager.process(() => eventManager.consume){(time, value) => 
+
+      Seq(Try{value /0}).filter(_.isFailure).asInstanceOf[Seq[Failure[Any]]]
+
+    }
+    result().size should be (3)
   }
 
 

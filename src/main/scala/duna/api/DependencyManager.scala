@@ -24,8 +24,8 @@ case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
         case Some(queue) => {
           queue.enqueue(Some(value)) match{
             case Left(Some(res)) => Success(res)
-            case Left(None) => {println("Put Didn't read anything from the hash = " + hash); Failure(new Throwable("Didn't read anything from the hash = " + hash))}
-            case Right(error) => {println(error.toString); Failure(new Throwable(error.toString))}
+            case Left(None) =>  Failure(new Throwable("Didn't read anything from the hash = " + hash))
+            case Right(error) =>  Failure(new Throwable(error.toString))
           }
         
         }
@@ -52,12 +52,12 @@ case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
       buffer.get(hash) match{
         case Some(queue) => queue.read match{
                 case Left(Some(value)) => Success(value)
-                case Left(None) => {println("Read Didn't read anything from the hash = " + hash); 
-                Failure(new Throwable("Read Didn't read anything from the hash = " + hash))}
-                case Right(error) =>  {println(error.toString); Failure(new Throwable(error.toString))}
+                case Left(None) => 
+                Failure(new Throwable("Read Didn't read anything from the hash = " + hash))
+                case Right(error) =>  Failure(new Throwable(error.toString))
                 
               }
-         case None => {println("Read Didn't find the hash = " + hash); Failure(new Throwable("Didn't find the hash = " + hash))}
+         case None => Failure(new Throwable("Didn't find the hash = " + hash))
          }
   }
 
@@ -75,8 +75,8 @@ case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
       buffer.get(hash) match{
         case Some(queue) => queue.dequeue match{
             case Left(Some(value)) => Success(value)
-                case Left(None) => {println("Get Didn't read anything from the hash = " + hash);
-                Failure(new Throwable("Get Didn't read anything from the hash = " + hash))}
+                case Left(None) =>
+                Failure(new Throwable("Get Didn't read anything from the hash = " + hash))
                 case Right(error) =>  Failure(new Throwable(error.toString))
                 
               }

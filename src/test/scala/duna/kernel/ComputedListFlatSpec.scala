@@ -19,6 +19,16 @@ class ComputedListFlatSpec extends FlatSpec with Matchers{
 
   }
 
+  "The ComputedList" should "add hash and value." in {
+  
+    val computedList: ComputedList[Option, Int] = ComputedList()
+    val value: Option[Int] = Some(3)
+    
+    computedList.add(value) should be (HashMap(value.hashCode -> value))
+    computedList.add(value) should be (HashMap(value.hashCode -> value))
+
+  }
+
   "The ComputedList" should "signal to every element of the list." in {
   
     val computedList: ComputedList[Option, Int] = ComputedList()

@@ -2,13 +2,12 @@ package architect
 package duna
 package api
 
-import duna.kernel.{Task, Callback, Computation, ComputedList, QueueIssue, ProcessingTime, Timer}
-import scala.collection.mutable.HashMap
-import scala.collection.Map
-import scala.util.{Try, Success, Failure}
-import duna.eventSourcing.{EventManager, Event}
+import java.util.UUID 
+import duna.kernel.{ Computation, Task, Callback, Timer, ProcessingTime, ComputedList }
+import duna.eventSourcing.{Event, EventManager}
 import duna.api.StateManager.{ Exec }
-import java.util.concurrent.{Future, CompletableFuture}
+import scala.util.{Try, Success, Failure}
+import java.util.concurrent.CompletableFuture
 
 class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: StateManager) extends Reactive[A](manager, bufferSize){ self =>
   
@@ -20,7 +19,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   def newValue(hashVar: Int, value: A): ProcessingTime[Task[Seq[Failure[Any]]]]  = synchronized{
     
     dependencyManager.put(hashVar, value) 
-    println("put " + value)
+
     process(recalc)
 
   }
@@ -37,7 +36,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
 
     dependencyManager.read(hashVar) match{
       case Success(value) => {
-        println("dependency = " + hashVar + " " + value)
+
         value
       } 
       case Failure(error) => {
@@ -68,7 +67,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
 
   def recalc  = {
    // If there is an event
-   eventManager.review{(time: Time, hashVar: Int) => { 
+   eventManager.process(() => eventManager.read){(time: Time, hashVar: Int) => { 
         // And if there are values 
       if(dependencyManager.hasNext(hashVar)){
         
@@ -81,7 +80,6 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
 
               case  Success(value) => {
 
-                  println("consume")
                   eventManager.consume
                   calculateRx(value)
 
@@ -91,7 +89,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
             results.asInstanceOf[Seq[Failure[Any]]]   ++ dependencyRes
             
         }else{
-          println("recalc Nothing was defined"); Seq(Failure(new Throwable("Nothing was defined")))
+          Seq(Failure(new Throwable("Nothing was defined")))
         }
           
       }

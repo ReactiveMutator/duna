@@ -3,17 +3,14 @@ package duna
 package api
 
 import java.util.UUID 
-
-
-import scala.collection.mutable.HashMap
-import duna.kernel.{ Computation, Task, Callback, Timer, Value, ProcessingTime, ComputedList }
+import duna.kernel.{ Computation, Task, Callback, Timer, ProcessingTime, ComputedList }
 import duna.eventSourcing.{Event, EventManager}
 import duna.api.StateManager.{ Exec }
 import scala.util.{Try, Success, Failure}
-import java.util.concurrent.{Future, CompletableFuture}
+import java.util.concurrent.CompletableFuture
 
 sealed class Var[A]
-  (manager: StateManager, private val queueSize: Int = 100, initialValue: => A) extends Reactive[A](manager, queueSize){ self =>
+  (manager: StateManager, private val queueSize: Int, initialValue: => A) extends Reactive[A](manager, queueSize){ self =>
                                            
   private val eventManager: EventManager[Time, Computation[A]] = EventManager(queueSize) // queued events of the new Var's values
   private val dataManager: DataManager[Time, A] = DataManager(Time(), initialValue) // contains the current value
@@ -60,7 +57,7 @@ sealed class Var[A]
 
   private def createExecutable = {
 
-    eventManager.process{(time: Time, value: Computation[A]) => { 
+    eventManager.process(() => eventManager.consume){(time: Time, value: Computation[A]) => { 
 
       val written = dataManager.write(time, value.exec)
 
