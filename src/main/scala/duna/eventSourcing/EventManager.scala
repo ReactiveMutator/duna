@@ -58,7 +58,7 @@ case class EventManager[Index, A](queueSize: Int){
   def process[B](function: () => Either[Event[Index, A], QueueIssue])(work: (Index, A) =>  Seq[Failure[B]]): () =>  Seq[Failure[B]] = () => {
 
     var result:   Seq[Failure[B]] = Seq()
-    
+      
       while(!isEmpty){
   
         val newResult = function() match {
@@ -68,7 +68,8 @@ case class EventManager[Index, A](queueSize: Int){
     
           } 
           case Right(error) => { 
-             Seq(Failure(new Throwable(error.toString)))
+ 
+            Seq(Failure(new Throwable(error.toString)))
           }
         }
         result = result ++ newResult
@@ -77,7 +78,4 @@ case class EventManager[Index, A](queueSize: Int){
     result
 
     }
-
-  
-
 }

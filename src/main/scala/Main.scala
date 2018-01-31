@@ -145,25 +145,20 @@ val runtime = Runtime.getRuntime()
 val usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
 
+implicit val stateManager = StateManager()
 
-  implicit val stateManager = StateManager()
+  val first = Var(0)
+  val second = Var(0)
 
-    var count = 0
-    val a = Var(1); val b = Var(2)
-    def mkRx(i: Int) = Rx[Int]{implicit rx => count += 1; i + b() }
+
+  val rx = Rx[Int]{implicit rx => first() + second()}
+  second.onChange{value => first := value + 1;}
+
+  rx.onChange{value => println(value); }
+  
+  second := 0
+
     
-    
-    val c = Rx[Int]{implicit rx => 
-       val newRx =mkRx(a()) 
-       newRx()
-    }
-
-    val obs = c.onChange(println)
-   // println(c.now +", b = " + b.now + ", a = " + a.now + ", " + count)
-    a := 4
-
-   // println(c.now +", b = " + b.now + ", a = " + a.now + ", " + count)
-    b := 3
 
   stateManager.stop()
 

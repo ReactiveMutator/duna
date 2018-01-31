@@ -4,7 +4,6 @@ package api
 
 import java.util.UUID 
 import duna.kernel.{ Task, Callback, Timer, ProcessingTime }
-import duna.api.StateManager.{ Exec }
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
 
@@ -19,14 +18,14 @@ abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyR
 
 
   def onChange(cb: A => Unit): Obs[A] = {
-      
+     
     val res = subscriptionManager.trigger(Callback(cb))
 
     res
   }
 
 
-    def deleteTriggers: Boolean = {
+  def deleteTriggers: Boolean = {
 
     subscriptionManager.deleteAll
 
@@ -35,15 +34,15 @@ abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyR
   protected def process(executable: () => Seq[Failure[Any]]): ProcessingTime[Task[Seq[Failure[Any]]]] = {
 
     if(task.isRunning){
-
+  
         ProcessingTime(0, task )
       
     }else{
-
-      val processing = Timer().elapsedTime{manager.exec(Exec{executable})}
-
-      task = processing.result 
+         
+      val processing = Timer().elapsedTime{manager.exec(executable)}
       
+      task = processing.result
+
       processing
       
     }

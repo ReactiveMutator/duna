@@ -5,12 +5,11 @@ package api
 import java.util.UUID 
 import duna.kernel.{ Computation, Task, Callback, Timer, ProcessingTime, ComputedList }
 import duna.eventSourcing.{Event, EventManager}
-import duna.api.StateManager.{ Exec }
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
 
 sealed class Var[A]
-  (manager: StateManager, private val queueSize: Int, initialValue: => A) extends Reactive[A](manager, queueSize){ self =>
+  (manager: StateManager, private val queueSize: Int = 100, initialValue: => A) extends Reactive[A](manager, queueSize){ self =>
                                            
   private val eventManager: EventManager[Time, Computation[A]] = EventManager(queueSize) // queued events of the new Var's values
   private val dataManager: DataManager[Time, A] = DataManager(Time(), initialValue) // contains the current value
@@ -43,14 +42,15 @@ sealed class Var[A]
 
   def :=(newValue: => A)  = {
     val time = Time()
+
+    // send to all Rx hashCode of the Var and the task
+    computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
+
     // enqueue new value
     val event = Event(time, Computation(() => newValue))
     
     eventManager.emit(event) 
-    
-     // send to all Rx hashCode of the Var and the task
-    computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
-    
+
     process(createExecutable)
 
   }
@@ -64,7 +64,7 @@ sealed class Var[A]
       val res = written match {
         
         case Success(inside) => {
-              // asyncronouos send a signal that Var was changed  
+              // asyncronouos send a signal that Var has changed  
               val computedRes = computed.signal{rx => 
                   Try{rx.newValue(self.hashCode, inside)}
               }.filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]

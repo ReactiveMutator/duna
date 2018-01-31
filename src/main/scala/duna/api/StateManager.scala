@@ -4,11 +4,11 @@ package duna
 package api
 
 import java.util.LinkedList
-import scala.collection.mutable.Queue
+import scala.collection.immutable.Queue
 import duna.processing.{ Executor, Worker }
-import StateManager.{Exec, Suspend, Stop, Message, EmptyMessage}
 import java.util.concurrent.Future
 import duna.kernel.Task 
+import java.util.concurrent.CompletableFuture
 
 case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors()) {self =>  
 
@@ -16,7 +16,7 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
 
   private val executor: Executor = Executor(poolSize)
 
-  private def tasks[A]: Queue[Task[A]] = new Queue()
+  @volatile private var tasks: List[Task[Any]] = List()
 /**
   def registrate[A](node: Var[A]): Boolean = {
 
@@ -30,97 +30,44 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
   }
 */
 
-  private def matcher[A](msg: Message[A]): Future[A] = {
-   // TODO: If executor is shutdown, an error throws. Need to make a state machine
-      msg match{
-              case Exec(function: (() => A)) => {
-                   executor.submit(function)
-                  }   
-              case Suspend() => {
-                    executor.submit(() => waiting()) // pure workaround to stay typesafe. Can I do better???
-                  }
-              case Stop() => {
-                    executor.submit(() => close())
-                  }
-              case EmptyMessage() =>{ // TODO: get rid of
-                  executor.submit(() => doNothing())
-              }
-                  
-            }
+  def exec[A](msg: () => A): Task[A] = {
     
-  }
-
-  def exec[A](msg: Message[A]): Task[A] = {
-    
-    val task = Task(matcher(msg))
-
-    tasks.enqueue(task)
-
+    val task =  Task(executor.submit(msg))
+    val newTasks = task :: tasks 
+    tasks = newTasks.asInstanceOf[List[Task[Any]]]
     task
  
   }
 
-  def doNothing(): Boolean = {
-    
-    true
-   
-  }
-
-
   def suspend(): Boolean = {
     
-    exec(Suspend())
+    waiting() 
     
     true
    
   }
 
   private def waiting(): Boolean = {
-  
-    while(!tasks.isEmpty){
-      tasks.dequeue.waiting
+    Thread.sleep(1000) // How to avoid this?
+    tasks.foreach{ task => 
+      task.waiting
     } 
     
     true
 
   }
 
-  private def close(): Boolean = {
+  def stop() = {
+     
     if(!executor.isShutdown) {
-
-     suspend()
+        
+     waiting()
      executor.close()
+     true
    }else{
      false
    }
-  }
-
-  def stop() = {
-
-    val task = self.exec(Stop())
-    task.waiting
-    true
 
   }
-
-}
-
-object StateManager{
-
-  sealed trait Message[@specialized(Int) A]
-
-  case class EmptyMessage() extends Message[Boolean]
-  case class Exec[@specialized(Int) A](f: () => A) extends Message[A]{
-
-    def exec: A = {
-      f()
-      
-    }
-      
-
-  }
-  case class Suspend() extends Message[Boolean]
-  case class Stop() extends Message[Boolean]
-
 
 }

@@ -9,6 +9,10 @@ case class SubscriptionManager[A](){ self =>
   
   @volatile private var triggers: Seq[Obs[A]] = Seq()
 
+  override def toString: String = {
+    triggers.toString
+  }
+
   def hasTriggers: Boolean = {
 
     triggers.nonEmpty

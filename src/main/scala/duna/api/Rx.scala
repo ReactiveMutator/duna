@@ -3,9 +3,8 @@ package duna
 package api
 
 import java.util.UUID 
-import duna.kernel.{ Computation, Task, Callback, Timer, ProcessingTime, ComputedList }
+import duna.kernel.{ Computation, Task, Callback, Timer, ProcessingTime, ComputedList, QueueIssue }
 import duna.eventSourcing.{Event, EventManager}
-import duna.api.StateManager.{ Exec }
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
 
@@ -17,16 +16,18 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   private val computed: ComputedList[Rx, A] = ComputedList()
   
   def newValue(hashVar: Int, value: A): ProcessingTime[Task[Seq[Failure[Any]]]]  = synchronized{
-    
-    dependencyManager.put(hashVar, value) 
 
-    process(recalc)
-
+    dependencyManager.put(hashVar, value) match{
+      case Success(value) => process(recalc)
+      case Failure(error) => process(() => Seq(Failure(new Throwable(error))))
+    }
   }
   
-  def addEvent(time: Time, hashVar: Int) = {
+  def addEvent(time: Time, hashVar: Int): Either[Event[Time, Int], QueueIssue] = {
 
     val event = Event(time,  hashVar)
+
+    computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
 
     eventManager.emit(event)
     
@@ -34,13 +35,13 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
 
   def dependency(hashVar: Int, init: A): A = {
 
-    dependencyManager.read(hashVar) match{
+    dependencyManager.read(hashVar) match {
       case Success(value) => {
 
         value
       } 
       case Failure(error) => {
-          
+
         dependencyManager.put(hashVar, init)
         init
 
@@ -51,28 +52,42 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   
   def calculateRx(rxValue:  A)  = {
       
-    val computedRes = computed.signal{rx => 
-              Try{rx.newValue(self.hashCode, rxValue)}
-          }
+    val written = dataManager.write(Time(), rxValue)
+    val res = written match {
+        
+        case Success(inside) => {
+              // asyncronouos send a signal that Var has changed  
+              val computedRes = computed.signal{rx => 
+                  Try{rx.newValue(self.hashCode, inside)}
+              }
 
-    val subscriptionRes =  subscriptionManager.run(rxValue).filter{_.isFailure}
+              val subscriptionRes =  subscriptionManager.run(inside).filter{_.isFailure}
+  
+              computedRes ++ subscriptionRes 
+     
+        }
+        case Failure(e) => {
 
-    val written = Seq(dataManager.write(Time(), rxValue)).filter{_.isFailure}
-
-    val newRes = computedRes ++ written 
-
-    newRes ++ subscriptionRes 
+           Seq(Failure(e))
+        
+        }
+      }
+    res
           
   }
 
   def recalc  = {
    // If there is an event
+
    eventManager.process(() => eventManager.read){(time: Time, hashVar: Int) => { 
+
         // And if there are values 
       if(dependencyManager.hasNext(hashVar)){
         
         // We move the queue to get the next value
-            val dependencyRes = Seq(dependencyManager.get(hashVar)).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]] 
+            val get = dependencyManager.get(hashVar)
+
+            val dependencyRes = Seq(get).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]] 
             
             val calculated: Try[A] = Try{ calculation(self) }
             
@@ -89,7 +104,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
             results.asInstanceOf[Seq[Failure[Any]]]   ++ dependencyRes
             
         }else{
-          Seq(Failure(new Throwable("Nothing was defined")))
+           Seq(Failure(new Throwable("Nothing was defined")))
         }
           
       }
@@ -106,7 +121,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   }
 
   def now = {
-      task.waiting
+   
       dataManager.read 
   }
 
