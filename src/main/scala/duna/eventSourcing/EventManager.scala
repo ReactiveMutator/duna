@@ -67,8 +67,8 @@ case class EventManager[Index, A](queueSize: Int){
             work(event.index, event.computation)
     
           } 
-          case Right(error) => { 
- \
+          case Right(error) => {
+            
             Seq(Failure(new Throwable(error.toString)))
           }
         }
