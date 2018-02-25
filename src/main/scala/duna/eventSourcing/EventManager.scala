@@ -29,7 +29,7 @@ case class EventManager[Index, A](queueSize: Int){
 
   def read: Either[Event[Index, A], QueueIssue] = {
     
-       eventQueue.read 
+      eventQueue.read 
   }
 
   def isEmpty: Boolean = {
@@ -67,8 +67,8 @@ case class EventManager[Index, A](queueSize: Int){
             work(event.index, event.computation)
     
           } 
-          case Right(error) => { 
- 
+          case Right(error) => {
+            
             Seq(Failure(new Throwable(error.toString)))
           }
         }

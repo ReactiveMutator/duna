@@ -64,11 +64,11 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
               val subscriptionRes =  subscriptionManager.run(inside).filter{_.isFailure}
   
               computedRes ++ subscriptionRes 
-     
+
         }
         case Failure(e) => {
 
-           Seq(Failure(e))
+          Seq(Failure(e))
         
         }
       }
@@ -77,9 +77,9 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   }
 
   def recalc  = {
-   // If there is an event
+  // If there is an event
 
-   eventManager.process(() => eventManager.read){(time: Time, hashVar: Int) => { 
+  eventManager.process(() => eventManager.read){(time: Time, hashVar: Int) => { 
 
         // And if there are values 
       if(dependencyManager.hasNext(hashVar)){
@@ -104,7 +104,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
             results.asInstanceOf[Seq[Failure[Any]]]   ++ dependencyRes
             
         }else{
-           Seq(Failure(new Throwable("Nothing was defined")))
+          Seq(Failure(new Throwable("Nothing was defined")))
         }
           
       }

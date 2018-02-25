@@ -12,7 +12,7 @@ import java.util.concurrent.CompletableFuture
 
 case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors()) {self =>  
 
- // private val registrator: LinkedList[Var[Any]] = new LinkedList() // Contains all Vars in the project
+// private val registrator: LinkedList[Var[Any]] = new LinkedList() // Contains all Vars in the project
 
   private val executor: Executor = Executor(poolSize)
 
@@ -36,7 +36,6 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
     val newTasks = task :: tasks 
     tasks = newTasks.asInstanceOf[List[Task[Any]]]
     task
- 
   }
 
   def suspend(): Boolean = {
@@ -44,7 +43,7 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
     waiting() 
     
     true
-   
+  
   }
 
   private def waiting(): Boolean = {
@@ -58,15 +57,15 @@ case class StateManager(poolSize: Int = Runtime.getRuntime().availableProcessors
   }
 
   def stop() = {
-     
+    
     if(!executor.isShutdown) {
         
-     waiting()
-     executor.close()
-     true
-   }else{
-     false
-   }
+    waiting()
+    executor.close()
+    true
+  }else{
+    false
+  }
 
   }
 
