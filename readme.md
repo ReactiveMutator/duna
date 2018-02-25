@@ -6,33 +6,33 @@ A very raw library for concurrency in scala.
 
 It consists of two main components:
 
-* val s = Var(smth)
-* val rx = Rx{ s() + d() }
+* `val s = Var(smth)`
+* `val rx = Rx{ s() + d() }`
 
 Semantics was borrowed from Li Haoyi's [scala.rx](https://github.com/lihaoyi/scala.rx). So it has some connections with FRP. But only a little. Internally, the library is mainly mutable,
 nevertheless, it is still thread safe.
 
 ```scala
 // stateManager distribute threads between Vars
-  implicit val stateManager = StateManager()
+implicit val stateManager = StateManager()
 
-  def mutator() = {
-    val s = Var(0, 7)   // first number - initial value
-                        // second number - a volume of an internal queue. Var's performans heavy depends on this number.
+def mutator() = {
+  val s = Var(0, 7)   // first number - initial value
+                      // second number - a volume of an internal queue. Var's performans heavy depends on this number.
 
-    for(i <- 1 to 5){
+  for(i <- 1 to 5){
 
-      s := i // Mutates Var value. Mutations of every Var happen sequentially.
+    s := i // Mutates Var value. Mutations of every Var happen sequentially.
 
-    }
-
-    s.now // Returns the last value.
   }
 
-  mutator()
+  s.now // Returns the last value.
+}
 
-  stateManager.stop() // Stops threadpool which works under the hood
-  ```
+mutator()
+
+stateManager.stop() // Stops threadpool which works under the hood
+```
 
 ## Fibonacci example
 
@@ -63,7 +63,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
   }
 
   fib(8)
-  ```
+```
 ###### Results:
 > * Elapsed time: 5.561E-5s
 > * Memory increased: 0 Mb
@@ -96,14 +96,14 @@ As expected, the most performant code is the most straitforward: a mutable appro
 
   println(fib(8))
   
-  ```
+```
 ###### Results:
 > * Elapsed time: 0.05673288s
 > * Memory increased: 4 Mb
 
 
 ### Latancy
- ##### 3 Example
+##### 3 Example
 ```scala
 // Naive mutable approach
 
@@ -125,7 +125,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
   }
 
   println(fib(8))
-  ```
+```
 ###### Results:
 > * Elapsed time: 24.005672s
 > * Memory increased: 0 Mb
@@ -159,7 +159,7 @@ As expected, the most performant code is the most straitforward: a mutable appro
   println(fib(8))
 
   stateManager.stop()
-  ```
+```
 ###### Results:
 > * Elapsed time: 8.06258s
 > * Memory increased: 4 Mb
@@ -167,31 +167,31 @@ As expected, the most performant code is the most straitforward: a mutable appro
 ## Fibonacchi with Rx
 
 ```scala
- import duna.api.{ Rx, Var, StateManager }
+import duna.api.{ Rx, Var, StateManager }
 
-  implicit val stateManager = StateManager()
+implicit val stateManager = StateManager()
 
-  val first = Var(0)
-  val second = Var(0)
+val first = Var(0)
+val second = Var(0)
 
 
-  val rx = Rx[Int]{implicit rx => first() + second()}
+val rx = Rx[Int]{implicit rx => first() + second()}
+
+first.onChange{value => println(value); second := rx.now}
+
+first := 1
+
+for(i <- 1 to 8){
+  first := second.now 
   
-  first.onChange{value => println(value); second := rx.now}
-  
-  first := 1
+}
 
-  for(i <- 1 to 8){
-    first := second.now 
-    
-  }
+println("End: " + first.now)
 
-  println("End: " + first.now)
-
-  stateManager.stop()
-  ```
+stateManager.stop()
+```
   ###### Results:
- ``` 
+``` 
   1
   0
   1
@@ -202,6 +202,6 @@ As expected, the most performant code is the most straitforward: a mutable appro
   8
   13
 End: 13
-  ```
+```
 > * Elapsed time: 18.091383s
 > * Memory increased: 5 Mb
