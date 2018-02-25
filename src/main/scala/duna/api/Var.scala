@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture
 
 sealed class Var[A]
   (manager: StateManager, private val queueSize: Int = 100, initialValue: => A) extends Reactive[A](manager, queueSize){ self =>
-                                           
+
   private val eventManager: EventManager[Time, Computation[A]] = EventManager(queueSize) // queued events of the new Var's values
   private val dataManager: DataManager[Time, A] = DataManager(Time(), initialValue) // contains the current value
   private val computed: ComputedList[Rx, A] = ComputedList() // all rx, where Var is a dependency
@@ -38,7 +38,7 @@ sealed class Var[A]
 
   }
   
- // def connectedTo[B, C](destination: Var[B])(relation: Relation[C]): Edge[A, B, C] = Edge(self, destination, relation)
+// def connectedTo[B, C](destination: Var[B])(relation: Relation[C]): Edge[A, B, C] = Edge(self, destination, relation)
 
   def :=(newValue: => A)  = {
     val time = Time()
@@ -72,15 +72,15 @@ sealed class Var[A]
               val subscriptionRes =  subscriptionManager.run(inside).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
 
               computedRes ++ subscriptionRes 
-     
+    
         }
         case Failure(e) => {
 
-           Seq(Failure(e))
+          Seq(Failure(e))
         
         }
       }
-       res
+      res
 
     }
   }
@@ -89,7 +89,7 @@ sealed class Var[A]
 }
 
 object Var{
- 
+
   def apply[A](value: => A, queueSize: Int = 100)(implicit manager: StateManager): Var[A] = {
     
     val variable: Var[A] = new Var[A](manager, queueSize, value){}

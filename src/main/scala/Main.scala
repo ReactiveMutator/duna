@@ -42,18 +42,18 @@ implicit val stateManager = StateManager()
 
   def fib(n: Int): Int = {
 
-   val first = Var(0)
-   val second = Var(1)
-   val count = Var(0)
+  val first = Var(0)
+  val second = Var(1)
+  val count = Var(0)
 
-   while(count().get < n){
+  while(count().get < n){
       val sum = first().get + second().get
       first := second().get
       second := sum
       count := count().get + 1
-   }
+  }
 
-   return first().get
+  return first().get
 }
   time(println("concurrently = " + fib(4)))
 
@@ -70,13 +70,13 @@ println("Used Memory before " + usedMemoryBefore2/1000000 + "Mb");
 
 
 def fib3(n: Int): Int = {
-   def fib_tail(n: Int, a: Int, b: Int): Int = n match {
+  def fib_tail(n: Int, a: Int, b: Int): Int = n match {
       case 0 => a
       case _ => fib_tail(n - 1, b, a + b)
-   }
-   return fib_tail(n, 0 , 1)
+  }
+  return fib_tail(n, 0 , 1)
 }
- time(println("simple = " + fib3(4)))
+time(println("simple = " + fib3(4)))
 
 // working code here
 val usedMemoryAfter2 = runtime.totalMemory() - runtime.freeMemory();
@@ -101,7 +101,7 @@ println("Memory increased:" + (usedMemoryAfter2-usedMemoryBefore2)/1000000 +"Mb"
           m = Future{Thread.sleep(1000); i }
           k = Future{Thread.sleep(1000); i }
         }
-       // s.trigger(println)
+      // s.trigger(println)
       s.onComplete{a => n.onComplete{b => println(a.get + b.get)}}
 
 

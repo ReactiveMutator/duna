@@ -26,20 +26,20 @@ case class Executor(poolSize: Int = Runtime.getRuntime().availableProcessors()){
 
     pool.submit(worker)
       
- 
+
   }
 
   def close(): Boolean = {
 
     if(!pool.isShutdown) {
 
-     pool.shutdown
+      pool.shutdown
 
-     true
+      true
 
     }else{
       
-     false
+      false
 
     }
   }

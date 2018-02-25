@@ -10,7 +10,7 @@ import scala.util.{Try, Success, Failure}
 
 case class DependencyManager[Index, A](bufferSize: Int = 5){self =>
 
-   @volatile private var buffer:  Map[Index, Queue[Option[A]]] = Map[Index, Queue[Option[A]]]()
+  @volatile private var buffer:  Map[Index, Queue[Option[A]]] = Map[Index, Queue[Option[A]]]()
 
   def show:  Map[Index, Queue[Option[A]]] = {
     

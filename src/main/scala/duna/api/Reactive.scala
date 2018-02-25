@@ -18,7 +18,7 @@ abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyR
 
 
   def onChange(cb: A => Unit): Obs[A] = {
-     
+    
     val res = subscriptionManager.trigger(Callback(cb))
 
     res
@@ -38,7 +38,7 @@ abstract class Reactive[@specialized(Short, Char, Int, Float, Long, Double, AnyR
         ProcessingTime(0, task )
       
     }else{
-         
+      
       val processing = Timer().elapsedTime{manager.exec(executable)}
       
       task = processing.result

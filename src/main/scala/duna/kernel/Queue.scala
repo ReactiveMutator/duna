@@ -91,13 +91,13 @@
       }else{
           val res = if(readPointer < actualSize || tmpStore.isEmpty){
 
-           store(phisicalReadPointer) // read value
+          store(phisicalReadPointer) // read value
           
         }else{
           
             tmpStore.element
 
-         
+        
         }
         
           Left(res)

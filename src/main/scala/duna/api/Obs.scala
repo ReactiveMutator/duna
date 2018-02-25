@@ -22,7 +22,7 @@ case class Obs[A](callback: Callback[A], link: SubscriptionManager[A]){self =>
     }
     
   } 
-                                                                                            
+
 
 }
 
