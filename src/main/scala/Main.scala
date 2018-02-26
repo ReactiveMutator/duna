@@ -145,23 +145,30 @@ val runtime = Runtime.getRuntime()
 val usedMemoryBefore = runtime.totalMemory() - runtime.freeMemory();
 println("Used Memory before" + usedMemoryBefore/1000000 + "Mb");
 
-implicit val stateManager = StateManager()
+  implicit val stateManager = StateManager()
 
-  val first = Var(0)
-  val second = Var(0)
+  def mutator = {
+    val first = Var(0)
+    val second = Var(1)
+    val counter = Var(0)
 
-
-  val rx = Rx[Int]{implicit rx => first() + second()}
-  second.onChange{value => first := value + 1;}
-
-  rx.onChange{value => println(value); }
-  
-  second := 0
-
+    val rx = Rx[Int]{implicit rx => 
+    
+      val c = counter.now
+      if(c < 8){
+        counter :=  c + 1 
+        val s = second.now
+        first :=  second.now
+        second :=  first() + s 
+      } 
+    second.now
+    }  
+    first := 1
+  }
     
 
+    time(mutator)
   stateManager.stop()
-
 val usedMemoryAfter = runtime.totalMemory() - runtime.freeMemory();
 println("Memory increased Future:" + (usedMemoryAfter-usedMemoryBefore)/1000000 +"Mb");
 

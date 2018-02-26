@@ -121,7 +121,7 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
   }
 
   def now = {
-   
+      task.waiting
       dataManager.read 
   }
 

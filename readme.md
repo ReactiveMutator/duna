@@ -171,37 +171,94 @@ import duna.api.{ Rx, Var, StateManager }
 
 implicit val stateManager = StateManager()
 
-val first = Var(0)
-val second = Var(0)
+    val first = Var(0)
+    val second = Var(1)
+    val counter = Var(0)
 
+    val rx = Rx[Int]{implicit rx => 
+    
+      val c = counter.now
+      if(c < 20){
+        counter := { Thread.sleep(1000); c + 1 }
+        val s = second.now
+        first := { Thread.sleep(1000); s }
+        second := { Thread.sleep(1000); first() + s }
+      } 
+    second.now
+    }  
 
-val rx = Rx[Int]{implicit rx => first() + second()}
-
-first.onChange{value => println(value); second := rx.now}
-
-first := 1
-
-for(i <- 1 to 8){
-  first := second.now 
-  
-}
-
-println("End: " + first.now)
-
-stateManager.stop()
-```
+    first := 1
+  stateManager.stop()
+  ```
   ###### Results:
-``` 
-  1
-  0
-  1
-  1
-  2
-  3
-  5
-  8
-  13
-End: 13
-```
+
 > * Elapsed time: 18.091383s
 > * Memory increased: 5 Mb
+```
+  21
+  34
+  55
+  89
+  144
+  233
+  377
+  610
+  987
+  1597
+  2584
+  4181
+  6765
+  10946
+  ```
+
+## A power of two
+
+```scala
+
+import duna.api.{ Rx, Var, StateManager }
+  
+  implicit val stateManager = StateManager()
+
+    val first = Var(0)
+    val second = Var(1)
+    var counter = 0
+
+    second.onChange{value =>
+      if(counter < 20){
+        counter += 1 
+        first := value
+      } 
+    }
+    first.onChange{value =>
+      val sec = second.now
+      second := value + sec
+    }
+    first.onChange(println)
+    first := 1
+
+  stateManager.stop()
+  ```
+  ###### Results:
+ ``` 
+  1
+  2
+  4
+  8
+  16
+  32
+  64
+  128
+  256
+  512
+  1024
+  2048
+  4096
+  8192
+  16384
+  32768
+  65536
+  131072
+  262144
+  524288
+  1048576
+ ```
