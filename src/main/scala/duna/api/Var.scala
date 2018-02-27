@@ -3,7 +3,7 @@ package duna
 package api
 
 import java.util.UUID 
-import duna.kernel.{ Computation, Task, Callback, Timer, ProcessingTime, ComputedList }
+import duna.kernel.{ Events, Read, Write, Task, Callback, Timer, ProcessingTime, ComputedList }
 import duna.eventSourcing.{Event, EventManager}
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture
 sealed class Var[A]
   (manager: StateManager, private val queueSize: Int = 100, initialValue: => A) extends Reactive[A](manager, queueSize){ self =>
 
-  private val eventManager: EventManager[Time, Computation[A]] = EventManager(queueSize) // queued events of the new Var's values
+  private val eventManager: EventManager[Time, Events[A]] = EventManager(queueSize) // queued events of the new Var's values
   private val dataManager: DataManager[Time, A] = DataManager(Time(), initialValue) // contains the current value
   private val computed: ComputedList[Rx, A] = ComputedList() // all rx, where Var is a dependency
   
@@ -23,10 +23,22 @@ sealed class Var[A]
   }
 
   
-  def now: A = {
+  def pull(callback: A => Unit) = {
 
-    task.waiting
-    dataManager.read
+    val time = Time()
+    
+    val event: Event[Time, Events[A]] = Event(time, Read(callback))
+    
+    eventManager.emit(event) 
+
+    process(createExecutable)
+    
+  }
+
+  def now = {
+
+      task.waiting
+      dataManager.read 
 
   }
 
@@ -47,7 +59,7 @@ sealed class Var[A]
     computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
 
     // enqueue new value
-    val event = Event(time, Computation(() => newValue))
+    val event: Event[Time, Events[A]] = Event(time, Write(() => newValue))
     
     eventManager.emit(event) 
 
@@ -57,31 +69,39 @@ sealed class Var[A]
 
   private def createExecutable = {
 
-    eventManager.process(() => eventManager.consume){(time: Time, value: Computation[A]) => { 
-
-      val written = dataManager.write(time, value.exec)
-
-      val res = written match {
+    eventManager.process(() => eventManager.consume){(time: Time, value: Events[A]) => { 
+      
+      value match {
         
-        case Success(inside) => {
-              // asyncronouos send a signal that Var has changed  
-              val computedRes = computed.signal{rx => 
-                  Try{rx.newValue(self.hashCode, inside)}
-              }.filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
+        case Write(function) => {
+          
+          val written = dataManager.write(time, function())
 
-              val subscriptionRes =  subscriptionManager.run(inside).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
+          val res = written match {
+            
+            case Success(inside) => {
+                  // asyncronouos send a signal that Var has changed  
+                  val computedRes = computed.signal{rx => 
+                      Try{rx.newValue(self.hashCode, inside)}
+                  }.filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
 
-              computedRes ++ subscriptionRes 
-    
-        }
-        case Failure(e) => {
+                  val subscriptionRes =  subscriptionManager.run(inside).filter{_.isFailure}.asInstanceOf[Seq[Failure[Any]]]
 
-          Seq(Failure(e))
+                  computedRes ++ subscriptionRes 
         
+            }
+            case Failure(e) => {
+
+              Seq(Failure(e))
+            
+            }
+          }
+          res
         }
+        
+        case Read(function) => Seq()
+
       }
-      res
-
     }
   }
 }

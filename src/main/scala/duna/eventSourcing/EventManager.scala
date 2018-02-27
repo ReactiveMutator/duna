@@ -2,7 +2,7 @@ package architect
 package duna
 package eventSourcing
 
-import duna.kernel.{Queue, QueueIssue, Computation, Task, Callback}
+import duna.kernel.{Queue, QueueIssue, Task, Callback}
 import duna.kernel.Timer._ 
 import scala.util.{Try, Success, Failure}
 
