@@ -8,6 +8,7 @@
   import scala.reflect.ClassTag 
   import java.util.concurrent.ConcurrentLinkedQueue
   import scala.collection.immutable.SortedMap
+  
   trait QueueIssue{
     val message: String
   }

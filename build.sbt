@@ -11,4 +11,6 @@ val duna = (
         "org.scalatest" % "scalatest_2.12" % "3.0.4" % "test",
         "org.scalacheck" %% "scalacheck" % "1.13.4" % "test"),
     logBuffered in Test := false
+    
 )
+enablePlugins(TutPlugin)
