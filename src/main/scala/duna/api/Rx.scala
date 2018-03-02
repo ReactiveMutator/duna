@@ -3,8 +3,7 @@ package duna
 package api
 
 import java.util.UUID 
-import duna.kernel.{ Task, Callback, Timer, ProcessingTime, ComputedList, QueueIssue }
-import duna.eventSourcing.{Event, EventManager}
+import duna.kernel.{ Value, Task, Callback, Timer, ProcessingTime, ComputedList, QueueIssue }
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
 
@@ -23,9 +22,9 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
     }
   }
   
-  def addEvent(time: Time, hashVar: Int): Either[Event[Time, Int], QueueIssue] = {
+  def addEvent(time: Time, hashVar: Int): Either[Value[Time, Int], QueueIssue] = {
 
-    val event = Event(time,  hashVar)
+    val event = Value(time,  hashVar)
 
     computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
 

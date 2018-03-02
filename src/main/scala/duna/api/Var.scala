@@ -3,8 +3,7 @@ package duna
 package api
 
 import java.util.UUID 
-import duna.kernel.{ Events, Read, Write, Task, Callback, Timer, ProcessingTime, ComputedList }
-import duna.eventSourcing.{Event, EventManager}
+import duna.kernel.{ Value, Events, Read, Write, Task, Callback, Timer, ProcessingTime, ComputedList }
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
 
@@ -27,7 +26,7 @@ sealed class Var[A]
 
     val time = Time()
     
-    val event: Event[Time, Events[A]] = Event(time, Read(callback))
+    val event: Value[Time, Events[A]] = Value(time, Read(callback))
     
     eventManager.emit(event) 
 
@@ -59,7 +58,7 @@ sealed class Var[A]
     computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
 
     // enqueue new value
-    val event: Event[Time, Events[A]] = Event(time, Write(() => newValue))
+    val event: Value[Time, Events[A]] = Value(time, Write(() => newValue))
     
     eventManager.emit(event) 
 

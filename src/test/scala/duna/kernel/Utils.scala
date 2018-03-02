@@ -2,7 +2,6 @@ package architect
 package duna
 
 import duna.kernel.{Queue, QueueIssue, CantDequeueEmptyQueue }
-import duna.eventSourcing.Event
 import scala.util.{ Either, Left, Right }
 
 
@@ -13,7 +12,7 @@ object Utils{
     val availableSize = {
       val runtime = Runtime.getRuntime()
 
-        (runtime.freeMemory/4/32).toInt // 32bits is Int size, 4 - memory share
+        (runtime.freeMemory/4/32).toInt // 32 bits is Int size, 4 - memory share
     }
 
     if(size < 1 ){
