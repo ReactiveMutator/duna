@@ -1,10 +1,7 @@
 
 lazy val root = (
     project in file(".")
-).aggregate(dunaJS, dunaJVM).settings(
-    publish := {},
-    publishLocal := {}
-)
+).aggregate(dunaJS, dunaJVM)
 
 lazy val duna = crossProject.in(file(".")).
   settings(
@@ -18,12 +15,6 @@ lazy val duna = crossProject.in(file(".")).
         "org.scalatest" %%% "scalatest" % "3.0.5" % "test",
         "org.scalacheck"  %%% "scalacheck" % "1.13.4" % "test"),
     logBuffered in Test := false
-  ).
-  jvmSettings(
-    // Add JVM-specific settings here
-  ).
-  jsSettings(
-    // Add JS-specific settings here
   )
 
 lazy val dunaJVM = duna.jvm
