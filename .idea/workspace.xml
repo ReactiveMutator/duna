@@ -2,48 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="69bf969a-76ac-42e0-aa34-067b4708e520" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/build.sbt" beforeDir="false" afterPath="$PROJECT_DIR$/build.sbt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/Main.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/DataManager.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/DependencyManager.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/EventManager.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/Obs.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/Reactive.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/Rx.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/StateManager.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/SubscriptionManager.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/Time.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/api/Var.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/Callback.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/ComputedList.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/Events.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/ProcessingTime.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/Queue.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/Task.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/Timer.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/kernel/Value.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/processing/Executor.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/scala/duna/processing/Worker.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tut/api.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tut/kernel.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/tut/processing.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/DataManagerFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/DataManagerPropSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/DependencyManagerFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/DependencyManagerPropSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/EventManagerFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/RxFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/RxPropSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/SubscriptionManagerFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/VarFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/api/VarPropSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/kernel/ComputedListFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/kernel/QueueFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/kernel/QueuePropSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/kernel/TaskFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/kernel/Utils.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/processing/ExecutorFlatSpec.scala" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/scala/duna/processing/ExecutorPropSpec.scala" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/source_documentation.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/target/" />
     <ignored path="$PROJECT_DIR$/project/project/target/" />
@@ -102,11 +63,20 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.md" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/index.md">
+      <file leaf-file-name="source_documentation.md" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/source_documentation.md">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
               <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="5" lean-forward="true" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
             </state>
           </provider>
         </entry>
@@ -138,6 +108,7 @@
         <option value="$PROJECT_DIR$/src/main/scala/architect/duna/kernel/Queue.scala" />
         <option value="$PROJECT_DIR$/docs/index.html" />
         <option value="$PROJECT_DIR$/index.md" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -404,10 +375,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/index.md">
+    <entry file="file://$PROJECT_DIR$/source_documentation.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="4" column="24" selection-start-line="4" selection-start-column="24" selection-end-line="4" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="5" lean-forward="true" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
         </state>
       </provider>
     </entry>
