@@ -3,8 +3,8 @@ package duna
 package api
 
 import java.util.UUID 
-import duna.kernel.{ Task, Callback, Timer, ProcessingTime, ComputedList, QueueIssue }
-import duna.eventSourcing.{Event, EventManager}
+import duna.kernel.{ Value, Task, Callback, Timer, ProcessingTime, ComputedList, QueueIssue }
+import duna.eventSourcing.{Event}
 import scala.util.{Try, Success, Failure}
 import java.util.concurrent.CompletableFuture
 
