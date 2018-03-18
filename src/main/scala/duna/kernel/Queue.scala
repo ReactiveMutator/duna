@@ -31,7 +31,8 @@
     // We calculate an array size available on the machine.
     private val availableSize = {
       val runtime = Runtime.getRuntime()
-
+      // Hard coded values are: 32bits is Int size, 4 - memory share
+      // TODO: change integer zite to A size
       (runtime.freeMemory/4/32).toInt // 32bits is Int size, 4 - memory share
     }
     // We check the input size. If it is less than one, we make 100000 array (because I want so). 
@@ -71,26 +72,26 @@
 
     }
 
-    Whenever a write pointer is bigger than array size, we put next elements into the tmpStore. It is a backpressure strategy. If a producer is faster than consumer, then the default array is not enought. We start using tmpStore, which help us under heavy load. But it can cause an OutOfMemoryException exeption. Type of the tmpStore is ConcurrentLinkedQueue, so it is not limited and can be dynamically resized. Why we didn’t do it before? Because any linked list based data structure with unknown length at runtime replaces itself with a new allocated structure when the capacity is exceeded. A new structure is allocated and a previous one is collected multiple times. This process can generate a lot of garbage and lead to memory leak.
+    // Whenever a write pointer is bigger than array size, we put next elements into the tmpStore. It is a backpressure strategy. If a producer is faster than consumer, then the default array is not enought. We start using tmpStore, which help us under heavy load. But it can cause an OutOfMemoryException exeption. Type of the tmpStore is ConcurrentLinkedQueue, so it is not limited and can be dynamically resized. Why we didn’t do it before? Because any linked list based data structure with unknown length at runtime replaces itself with a new allocated structure when the capacity is exceeded. A new structure is allocated and a previous one is collected multiple times. This process can generate a lot of garbage and lead to memory leak.
     def enqueue(value: => A): Either[A, QueueIssue] = {
-      
-      if(writePointer >= actualSize){ // The queue is full, can't rewrite an element which hasn't been read
+      // The queue is full, can't rewrite an element which hasn't been read
+      if(writePointer >= actualSize){
 
         tmpStore.add(value)
 
       }else{
-
-        store.update(phisicalWritePointer, value) // enqueue a new element
+        // Enqueue a new element
+        store.update(phisicalWritePointer, value)
 
       }
-
-      val newWritePointer = writePointer + 1 // move writePointer to the next slot
+      // Move writePointer to the next slot
+      val newWritePointer = writePointer + 1
       writePointer = newWritePointer
 
       Left(value)
 
     }
-    // do not take an element from the queue
+
     def read: Either[A, QueueIssue] = {
       if(isEmpty){ 
         
@@ -99,7 +100,7 @@
       }else{
           val res = if(readPointer < actualSize || tmpStore.isEmpty){
 
-          store(phisicalReadPointer) // read value
+          store(phisicalReadPointer)
           
         }else{
           
@@ -112,7 +113,7 @@
       }
     
     }
-    // do not take an element from the queue
+
     def hasNext: Boolean = {
       if(isEmpty){ 
         
@@ -121,7 +122,7 @@
       }else{
         val res = if(readPointer + 1 < writePointer){
 
-            true // read value
+            true
             
           }else{
               
@@ -149,7 +150,7 @@
 
         val res = if(readPointer < actualSize || tmpStore.isEmpty){
 
-          val value = store(phisicalReadPointer) // read value
+          val value = store(phisicalReadPointer)
           value
         }else{
           

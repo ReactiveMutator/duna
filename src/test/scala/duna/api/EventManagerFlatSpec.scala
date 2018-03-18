@@ -3,7 +3,8 @@ package duna
 
 import org.scalatest._
 import prop._
-import duna.eventSourcing.{ Event, EventManager}
+import duna.api.EventManager
+import duna.kernel.Value
 import scala.util.{Try, Success, Failure}
 
 class EventManagerFlatSpec extends FlatSpec with Matchers{
@@ -12,10 +13,10 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
     
     val eventManager = EventManager[Int, Int](5)
 
-    eventManager.emit(Event(0,  5))
-    eventManager.emit(Event(1,  6))
-    eventManager.emit(Event(2,  7))
-    eventManager.emit(Event(3,  8))
+    eventManager.emit(Value(0,  5))
+    eventManager.emit(Value(1,  6))
+    eventManager.emit(Value(2,  7))
+    eventManager.emit(Value(3,  8))
 
 
     eventManager.toArray(0).index should be (0)
@@ -29,10 +30,10 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
 
     val eventManager = EventManager[Int, Int](3)
 
-    eventManager.emit(Event(0,  5))
-    eventManager.emit(Event(1,  6))
-    eventManager.emit(Event(2,  7))
-    eventManager.emit(Event(3,  8))
+    eventManager.emit(Value(0,  5))
+    eventManager.emit(Value(1,  6))
+    eventManager.emit(Value(2,  7))
+    eventManager.emit(Value(3,  8))
 
 
     eventManager.toArray(0).index should be (0)
@@ -45,10 +46,11 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
     
     val eventManager = EventManager[Int, Int](5)
 
-    eventManager.emit(Event(0,  5))
-    eventManager.emit(Event(1,  6))
-    eventManager.emit(Event(2,  7))
-    eventManager.emit(Event(3,  8))
+
+    eventManager.emit(Value(0,  5))
+    eventManager.emit(Value(1,  6))
+    eventManager.emit(Value(2,  7))
+    eventManager.emit(Value(3,  8))
 
 
     eventManager.consume match{
@@ -63,10 +65,11 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
     
     val eventManager = EventManager[Int, Int](3)
 
-    eventManager.emit(Event(0,  5))
-    eventManager.emit(Event(1,  6))
-    eventManager.emit(Event(2,  7))
-    eventManager.emit(Event(3,  8))
+
+    eventManager.emit(Value(0,  5))
+    eventManager.emit(Value(1,  6))
+    eventManager.emit(Value(2,  7))
+    eventManager.emit(Value(3,  8))
 
 
     eventManager.consume match{
@@ -82,11 +85,11 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
 
     val eventManager = EventManager[Int, Int](3)
 
-    eventManager.emit(Event(0, 5))
-    eventManager.emit(Event(1, 6))
-    eventManager.emit(Event(2, 7))
+    eventManager.emit(Value(0, 5))
+    eventManager.emit(Value(1, 6))
+    eventManager.emit(Value(2, 7))
       
-    eventManager.toString should be ( "Array(Event(0,5), Event(1,6), Event(2,7))")
+    eventManager.toString should be ( "Array(Value(0,5), Value(1,6), Value(2,7))")
 
   }
 
@@ -102,9 +105,9 @@ class EventManagerFlatSpec extends FlatSpec with Matchers{
 
     val eventManager = EventManager[Int, Int](3)
 
-    eventManager.emit(Event(0, 5))
-    eventManager.emit(Event(1, 6))
-    eventManager.emit(Event(2, 7))
+    eventManager.emit(Value(0, 5))
+    eventManager.emit(Value(1, 6))
+    eventManager.emit(Value(2, 7))
 
     val result = eventManager.process(() => eventManager.consume){(time, value) => 
 

@@ -1,5 +1,4 @@
 
-
 # Kernel (duna/kernel)
 
 Kernel contains the highest level items. They don't depend on any item from Duna. 

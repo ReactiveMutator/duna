@@ -23,9 +23,9 @@ class Rx[A](calculation: Rx[A] => A, private val bufferSize: Int, manager: State
     }
   }
   
-  def addEvent(time: Time, hashVar: Int): Either[Event[Time, Int], QueueIssue] = {
+  def addEvent(time: Time, hashVar: Int): Either[Value[Time, Int], QueueIssue] = {
 
-    val event = Event(time,  hashVar)
+    val event = Value(time,  hashVar)
 
     computed.signal(rx => Try{rx.addEvent(time, self.hashCode)})
 
