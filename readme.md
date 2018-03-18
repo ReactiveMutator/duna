@@ -1,4 +1,4 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/09b67f8d9e0d474d9fd3e9c1dae1c00d)](https://www.codacy.com/app/garrynsk/duna?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=garrynsk/duna&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/09b67f8d9e0d474d9fd3e9c1dae1c00d)](https://www.codacy.com/app/garrynsk/duna?utm_source=github.com&utm_medium=referral&utm_content=garrynsk/duna&utm_campaign=Badge_Coverage) [![Build Status](https://travis-ci.org/garrynsk/duna.svg?branch=master)](https://travis-ci.org/garrynsk/duna) [![BCH compliance](https://bettercodehub.com/edge/badge/ReactiveMutator/duna?branch=master)](https://bettercodehub.com/) [![Known Vulnerabilities](https://snyk.io/test/github/garrynsk/duna/badge.svg)](https://snyk.io/test/github/garrynsk/duna/badge.svg)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/09b67f8d9e0d474d9fd3e9c1dae1c00d)](https://www.codacy.com/app/garrynsk/duna?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=garrynsk/duna&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/09b67f8d9e0d474d9fd3e9c1dae1c00d)](https://www.codacy.com/app/garrynsk/duna?utm_source=github.com&utm_medium=referral&utm_content=garrynsk/duna&utm_campaign=Badge_Coverage) [![Build Status](https://travis-ci.org/ReactiveMutator/duna.svg?branch=master)](https://travis-ci.org/ReactiveMutator/duna) [![BCH compliance](https://bettercodehub.com/edge/badge/ReactiveMutator/duna?branch=master)](https://bettercodehub.com/) [![Known Vulnerabilities](https://snyk.io/test/github/garrynsk/duna/badge.svg)](https://snyk.io/test/github/garrynsk/duna/badge.svg)
 # DUNA
 
 A very raw library for concurrency in scala.
@@ -38,6 +38,9 @@ stateManager.stop() // Stops threadpool which works under the hood
 Multithreading is not a cure-all for performance problems. But in case of long lasting tasks it can improve a situation significantly.
 Below are simple examples based on Fibonacci sequence. Measures were taken on 4 core AMD A8-4500M APU, 16GB DDR3, Arch Linux 1.4, 64-bit.
 As expected, the most performant code is the most straitforward: a mutable approach. But when time comes to latency, multithreading thrives. So that, a thread pool consisted of 3 Vars outperforms mutable variables and the fourth example is three times faster than third.
+
+<details> 
+<summary>Examples</summary>
 
 ### No latency
 ##### 1 Example
@@ -209,8 +212,8 @@ implicit val stateManager = StateManager()
   6765
   10946
   ```
-
-## A power of two
+</details>
+## A power of two example
 
 ```scala
 

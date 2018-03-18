@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>StateManager.scala</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../../../../../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="DataManager.html">
+                  src/main/scala/duna/api/DataManager.scala
+                </a>
+              
+                
+                <a class="source" href="DependencyManager.html">
+                  src/main/scala/duna/api/DependencyManager.scala
+                </a>
+              
+                
+                <a class="source" href="Obs.html">
+                  src/main/scala/duna/api/Obs.scala
+                </a>
+              
+                
+                <a class="source" href="Reactive.html">
+                  src/main/scala/duna/api/Reactive.scala
+                </a>
+              
+                
+                <a class="source" href="Rx.html">
+                  src/main/scala/duna/api/Rx.scala
+                </a>
+              
+                
+                <a class="source" href="StateManager.html">
+                  src/main/scala/duna/api/StateManager.scala
+                </a>
+              
+                
+                <a class="source" href="SubscriptionManager.html">
+                  src/main/scala/duna/api/SubscriptionManager.scala
+                </a>
+              
+                
+                <a class="source" href="Time.html">
+                  src/main/scala/duna/api/Time.scala
+                </a>
+              
+                
+                <a class="source" href="Var.html">
+                  src/main/scala/duna/api/Var.scala
+                </a>
+              
+                
+                <a class="source" href="../eventSourcing/Event.html">
+                  src/main/scala/duna/eventSourcing/Event.scala
+                </a>
+              
+                
+                <a class="source" href="../eventSourcing/EventManager.html">
+                  src/main/scala/duna/eventSourcing/EventManager.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Callback.html">
+                  src/main/scala/duna/kernel/Callback.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Computation.html">
+                  src/main/scala/duna/kernel/Computation.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/ComputedList.html">
+                  src/main/scala/duna/kernel/ComputedList.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/ProcessingTime.html">
+                  src/main/scala/duna/kernel/ProcessingTime.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Queue.html">
+                  src/main/scala/duna/kernel/Queue.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Task.html">
+                  src/main/scala/duna/kernel/Task.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Timer.html">
+                  src/main/scala/duna/kernel/Timer.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Value.html">
+                  src/main/scala/duna/kernel/Value.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Executor.html">
+                  src/main/scala/duna/processing/Executor.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Worker.html">
+                  src/main/scala/duna/processing/Worker.scala
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>StateManager.scala</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+
+<span class="hljs-keyword">package</span> duna
+<span class="hljs-keyword">package</span> api
+
+<span class="hljs-keyword">import</span> java.util.<span class="hljs-type">LinkedList</span>
+<span class="hljs-keyword">import</span> scala.collection.immutable.<span class="hljs-type">Queue</span>
+<span class="hljs-keyword">import</span> duna.processing.{ <span class="hljs-type">Executor</span>, <span class="hljs-type">Worker</span> }
+<span class="hljs-keyword">import</span> java.util.concurrent.<span class="hljs-type">Future</span>
+<span class="hljs-keyword">import</span> duna.kernel.<span class="hljs-type">Task</span> 
+<span class="hljs-keyword">import</span> java.util.concurrent.<span class="hljs-type">CompletableFuture</span>
+
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">StateManager</span>(<span class="hljs-params">poolSize: <span class="hljs-type">Int</span> = <span class="hljs-type">Runtime</span>.getRuntime(</span>).<span class="hljs-title">availableProcessors</span>(<span class="hljs-params"></span>)) </span>{self =&gt;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>private val registrator: LinkedList[Var[Any]] = new LinkedList() // Contains all Vars in the project</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> executor: <span class="hljs-type">Executor</span> = <span class="hljs-type">Executor</span>(poolSize)
+
+  <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> tasks: <span class="hljs-type">List</span>[<span class="hljs-type">Task</span>[<span class="hljs-type">Any</span>]] = <span class="hljs-type">List</span>()
+<span class="hljs-comment">/**
+  def registrate[A](node: Var[A]): Boolean = {
+
+      self.registrator.add(node.asInstanceOf[Var[Any]])
+      true
+
+  } 
+
+  def size: Int = {
+    registrator.size
+  }
+*/</span>
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">exec</span></span>[<span class="hljs-type">A</span>](msg: () =&gt; <span class="hljs-type">A</span>): <span class="hljs-type">Task</span>[<span class="hljs-type">A</span>] = {
+    
+    <span class="hljs-keyword">val</span> task =  <span class="hljs-type">Task</span>(executor.submit(msg))
+    <span class="hljs-keyword">val</span> newTasks = task :: tasks 
+    tasks = newTasks.asInstanceOf[<span class="hljs-type">List</span>[<span class="hljs-type">Task</span>[<span class="hljs-type">Any</span>]]]
+    task
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">suspend</span></span>(): <span class="hljs-type">Boolean</span> = {
+    
+    waiting() 
+    
+    <span class="hljs-literal">true</span>
+  
+  }
+
+  <span class="hljs-keyword">private</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">waiting</span></span>(): <span class="hljs-type">Boolean</span> = {
+    <span class="hljs-type">Thread</span>.sleep(<span class="hljs-number">1000</span>) <span class="hljs-comment">// How to avoid this?</span>
+    tasks.foreach{ task =&gt; 
+      task.waiting
+    } 
+    
+    <span class="hljs-literal">true</span>
+
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">stop</span></span>() = {
+    
+    <span class="hljs-keyword">if</span>(!executor.isShutdown) {
+        
+    waiting()
+    executor.close()
+    <span class="hljs-literal">true</span>
+  }<span class="hljs-keyword">else</span>{
+    <span class="hljs-literal">false</span>
+  }
+
+  }
+
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

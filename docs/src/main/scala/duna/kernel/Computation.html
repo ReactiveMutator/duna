@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Computation</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../../../../../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="../api/DataManager.html">
+                  src/main/scala/duna/api/DataManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/DependencyManager.html">
+                  src/main/scala/duna/api/DependencyManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Obs.html">
+                  src/main/scala/duna/api/Obs.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Reactive.html">
+                  src/main/scala/duna/api/Reactive.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Rx.html">
+                  src/main/scala/duna/api/Rx.scala
+                </a>
+              
+                
+                <a class="source" href="../api/StateManager.html">
+                  src/main/scala/duna/api/StateManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/SubscriptionManager.html">
+                  src/main/scala/duna/api/SubscriptionManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Time.html">
+                  src/main/scala/duna/api/Time.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Var.html">
+                  src/main/scala/duna/api/Var.scala
+                </a>
+              
+                
+                <a class="source" href="../eventSourcing/Event.html">
+                  src/main/scala/duna/eventSourcing/Event.scala
+                </a>
+              
+                
+                <a class="source" href="../eventSourcing/EventManager.html">
+                  src/main/scala/duna/eventSourcing/EventManager.scala
+                </a>
+              
+                
+                <a class="source" href="Callback.html">
+                  src/main/scala/duna/kernel/Callback.scala
+                </a>
+              
+                
+                <a class="source" href="Computation.html">
+                  src/main/scala/duna/kernel/Computation.scala
+                </a>
+              
+                
+                <a class="source" href="ComputedList.html">
+                  src/main/scala/duna/kernel/ComputedList.scala
+                </a>
+              
+                
+                <a class="source" href="ProcessingTime.html">
+                  src/main/scala/duna/kernel/ProcessingTime.scala
+                </a>
+              
+                
+                <a class="source" href="Queue.html">
+                  src/main/scala/duna/kernel/Queue.scala
+                </a>
+              
+                
+                <a class="source" href="Task.html">
+                  src/main/scala/duna/kernel/Task.scala
+                </a>
+              
+                
+                <a class="source" href="Timer.html">
+                  src/main/scala/duna/kernel/Timer.scala
+                </a>
+              
+                
+                <a class="source" href="Value.html">
+                  src/main/scala/duna/kernel/Value.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Executor.html">
+                  src/main/scala/duna/processing/Executor.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Worker.html">
+                  src/main/scala/duna/processing/Worker.scala
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1 id="computation">Computation</h1>
+<h3 id="wrapper-of-a-lazy-function">Wrapper of a lazy function</h3>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">package</span> duna
+<span class="hljs-keyword">package</span> kernel</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Just a wrapper of a lazy function, which returns a value. Use it when you don’t want to execute the function right now.
+Probably it is not the best name, so you can offer something more appropriate.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Computation</span>[<span class="hljs-type">A</span>](<span class="hljs-params">blob: (</span>) <span class="hljs-title">=&gt;</span> <span class="hljs-title">A</span>)</span>{
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">exec</span></span>: <span class="hljs-type">A</span> = {
+    blob()
+  }
+
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
