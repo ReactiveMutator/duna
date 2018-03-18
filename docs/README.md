@@ -9,9 +9,6 @@ Build fast concurrent applications without suffering.
 <span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/Callback.html">Callback</a>
 <div style="margin-left: 50px; padding-bottom: 10px;">Wrapper of a function with effects.</div>
 
-<span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/Computation.html">Computation</a>
-<div style="margin-left: 50px; padding-bottom: 10px;">Wrapper of a lazy function.</div>
-
 <span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/ComputedList.html">ComputedList</a>
 <div style="margin-left: 50px; padding-bottom: 10px;">Stores Rx in it's dependent Vars.</div>
 
@@ -19,12 +16,13 @@ Build fast concurrent applications without suffering.
 <div style="margin-left: 50px; padding-bottom: 10px;">Wrapper of processing time and a resulting value.</div>
 
 <span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/Queue.html">Queue</a>
-<div style="margin-left: 50px; padding-bottom: 10px;">The queue is actually a circular buffer and two pointers, which point to the next writable element and the next readable element.</div>
+<div style="margin-left: 50px; padding-bottom: 10px;">Non blocking single producer mangy consumers queue.</div>
 
 <span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/Task.html">Task</a>
+<div style="margin-left: 50px; padding-bottom: 10px;">Wrapper of the future, which is returned by a thead pool.</div>
 
 <span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/Timer.html">Timer</a>
 <div style="margin-left: 50px; padding-bottom: 10px;">Measures elapsed time of a Task.</div>
 
 <span style="color: grey; font-family: 'Inconsolata', monospace;">Class</span> <a href="./src/main/scala/duna/kernel/Value.html">Value</a>
-<div style="margin-left: 50px; padding-bottom: 10px;">Deprecated</div>
+<div style="margin-left: 50px; padding-bottom: 10px;"></div>

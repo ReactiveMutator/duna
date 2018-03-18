@@ -20,58 +20,53 @@
             <div id="jump_page">
               
                 
-                <a class="source" href="../api/DataManager.html">
+                <a class="source" href="DataManager.html">
                   src/main/scala/duna/api/DataManager.scala
                 </a>
               
                 
-                <a class="source" href="../api/DependencyManager.html">
+                <a class="source" href="DependencyManager.html">
                   src/main/scala/duna/api/DependencyManager.scala
                 </a>
               
                 
-                <a class="source" href="../api/Obs.html">
+                <a class="source" href="EventManager.html">
+                  src/main/scala/duna/api/EventManager.scala
+                </a>
+              
+                
+                <a class="source" href="Obs.html">
                   src/main/scala/duna/api/Obs.scala
                 </a>
               
                 
-                <a class="source" href="../api/Reactive.html">
+                <a class="source" href="Reactive.html">
                   src/main/scala/duna/api/Reactive.scala
                 </a>
               
                 
-                <a class="source" href="../api/Rx.html">
+                <a class="source" href="Rx.html">
                   src/main/scala/duna/api/Rx.scala
                 </a>
               
                 
-                <a class="source" href="../api/StateManager.html">
+                <a class="source" href="StateManager.html">
                   src/main/scala/duna/api/StateManager.scala
                 </a>
               
                 
-                <a class="source" href="../api/SubscriptionManager.html">
+                <a class="source" href="SubscriptionManager.html">
                   src/main/scala/duna/api/SubscriptionManager.scala
                 </a>
               
                 
-                <a class="source" href="../api/Time.html">
+                <a class="source" href="Time.html">
                   src/main/scala/duna/api/Time.scala
                 </a>
               
                 
-                <a class="source" href="../api/Var.html">
+                <a class="source" href="Var.html">
                   src/main/scala/duna/api/Var.scala
-                </a>
-              
-                
-                <a class="source" href="Event.html">
-                  src/main/scala/duna/eventSourcing/Event.scala
-                </a>
-              
-                
-                <a class="source" href="EventManager.html">
-                  src/main/scala/duna/eventSourcing/EventManager.scala
                 </a>
               
                 
@@ -80,13 +75,13 @@
                 </a>
               
                 
-                <a class="source" href="../kernel/Computation.html">
-                  src/main/scala/duna/kernel/Computation.scala
+                <a class="source" href="../kernel/ComputedList.html">
+                  src/main/scala/duna/kernel/ComputedList.scala
                 </a>
               
                 
-                <a class="source" href="../kernel/ComputedList.html">
-                  src/main/scala/duna/kernel/ComputedList.scala
+                <a class="source" href="../kernel/Events.html">
+                  src/main/scala/duna/kernel/Events.scala
                 </a>
               
                 
@@ -150,15 +145,21 @@
             
             <div class="content"><div class='highlight'><pre>
 <span class="hljs-keyword">package</span> duna
-<span class="hljs-keyword">package</span> eventSourcing
+<span class="hljs-keyword">package</span> api
 
-<span class="hljs-keyword">import</span> duna.kernel.{<span class="hljs-type">Queue</span>, <span class="hljs-type">QueueIssue</span>, <span class="hljs-type">Computation</span>, <span class="hljs-type">Task</span>, <span class="hljs-type">Callback</span>}
+<span class="hljs-keyword">import</span> duna.kernel.{<span class="hljs-type">Queue</span>, <span class="hljs-type">QueueIssue</span>, <span class="hljs-type">Task</span>, <span class="hljs-type">Callback</span>, <span class="hljs-type">Value</span>}
 <span class="hljs-keyword">import</span> duna.kernel.<span class="hljs-type">Timer</span>._ 
 <span class="hljs-keyword">import</span> scala.util.{<span class="hljs-type">Try</span>, <span class="hljs-type">Success</span>, <span class="hljs-type">Failure</span>}
 
+<span class="hljs-comment">/** A person who uses our application.
+ *
+ *  @constructor create a new person with a name and age.
+ *  @param name the person's name
+ *  @param age the person's age in years
+ */</span>
 <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">EventManager</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>](<span class="hljs-params">queueSize: <span class="hljs-type">Int</span></span>)</span>{
 
-  <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> eventQueue: <span class="hljs-type">Queue</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]] = <span class="hljs-keyword">new</span> <span class="hljs-type">Queue</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]](queueSize)
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> eventQueue: <span class="hljs-type">Queue</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]] = <span class="hljs-keyword">new</span> <span class="hljs-type">Queue</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]](queueSize)
 
   <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">toString</span></span>: <span class="hljs-type">String</span> = {
 
@@ -166,18 +167,18 @@
 
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">emit</span></span>(event: <span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]): <span class="hljs-type">Either</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>] = {
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">emit</span></span>(event: <span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]): <span class="hljs-type">Either</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>] = {
 
     eventQueue.enqueue(event)
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">consume</span></span>: <span class="hljs-type">Either</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>] = {
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">consume</span></span>: <span class="hljs-type">Either</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>] = {
 
       eventQueue.dequeue 
     
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read</span></span>: <span class="hljs-type">Either</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>] = {
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">read</span></span>: <span class="hljs-type">Either</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>] = {
     
       eventQueue.read 
   }
@@ -194,12 +195,12 @@
 
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(function: <span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>] =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Seq</span>[<span class="hljs-type">Unit</span>] = {
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">map</span></span>(function: <span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>] =&gt; <span class="hljs-type">Unit</span>): <span class="hljs-type">Seq</span>[<span class="hljs-type">Unit</span>] = {
 
     eventQueue.map(function)
   }
 
-  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">toArray</span></span>: <span class="hljs-type">Array</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]] = {
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">toArray</span></span>: <span class="hljs-type">Array</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]] = {
 
     eventQueue.toArray
 
@@ -218,16 +219,16 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process</span></span>[<span class="hljs-type">B</span>](function: () =&gt; <span class="hljs-type">Either</span>[<span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>])(work: (<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>) =&gt;  <span class="hljs-type">Seq</span>[<span class="hljs-type">Failure</span>[<span class="hljs-type">B</span>]]): () =&gt;  <span class="hljs-type">Seq</span>[<span class="hljs-type">Failure</span>[<span class="hljs-type">B</span>]] = () =&gt; {
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">process</span></span>[<span class="hljs-type">B</span>](function: () =&gt; <span class="hljs-type">Either</span>[<span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>], <span class="hljs-type">QueueIssue</span>])(work: (<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>) =&gt;  <span class="hljs-type">Seq</span>[<span class="hljs-type">Failure</span>[<span class="hljs-type">B</span>]]): () =&gt;  <span class="hljs-type">Seq</span>[<span class="hljs-type">Failure</span>[<span class="hljs-type">B</span>]] = () =&gt; {
 
     <span class="hljs-keyword">var</span> result:   <span class="hljs-type">Seq</span>[<span class="hljs-type">Failure</span>[<span class="hljs-type">B</span>]] = <span class="hljs-type">Seq</span>()
       
       <span class="hljs-keyword">while</span>(!isEmpty){
   
         <span class="hljs-keyword">val</span> newResult = function() <span class="hljs-keyword">match</span> {
-          <span class="hljs-keyword">case</span> <span class="hljs-type">Left</span>(event: <span class="hljs-type">Event</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]) =&gt; {
+          <span class="hljs-keyword">case</span> <span class="hljs-type">Left</span>(event: <span class="hljs-type">Value</span>[<span class="hljs-type">Index</span>, <span class="hljs-type">A</span>]) =&gt; {
 
-            work(event.index, event.computation)
+            work(event.index, event.value)
     
           } 
           <span class="hljs-keyword">case</span> <span class="hljs-type">Right</span>(error) =&gt; {
