@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>Queue.scala</title>
+  <title>Queue</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="../../../../../docco.css" />
@@ -131,12 +131,6 @@
     
     <ul class="sections">
         
-          <li id="title">
-              <div class="annotation">
-                  <h1>Queue.scala</h1>
-              </div>
-          </li>
-        
         
         
         <li id="section-1">
@@ -145,7 +139,9 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <h1 id="queue">Queue</h1>
+<h3 id="non-blocking-single-producer-many-consumer-queue">Non-blocking single producer many consumer queue</h3>
+
             </div>
             
         </li>
@@ -162,7 +158,6 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>  
-  
   <span class="hljs-keyword">package</span> duna
   <span class="hljs-keyword">package</span> kernel
 
@@ -171,14 +166,7 @@
   <span class="hljs-keyword">import</span> scala.runtime.<span class="hljs-type">ScalaRunTime</span>._
   <span class="hljs-keyword">import</span> scala.reflect.<span class="hljs-type">ClassTag</span> 
   <span class="hljs-keyword">import</span> java.util.concurrent.<span class="hljs-type">ConcurrentLinkedQueue</span>
-  <span class="hljs-keyword">import</span> scala.collection.immutable.<span class="hljs-type">SortedMap</span>
-  <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">QueueIssue</span></span>{
-    <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span>
-  }
-
-  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CantDequeueEmptyQueue</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">QueueIssue</span></span>{
-    <span class="hljs-keyword">override</span> <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span> = <span class="hljs-string">"Can't dequeue for an empty queue."</span>
-  }</pre></div></div>
+  <span class="hljs-keyword">import</span> scala.collection.immutable.<span class="hljs-type">SortedMap</span></pre></div></div>
             
         </li>
         
@@ -189,11 +177,17 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>The queue is actually a circular buffer and two pointers, which point to the next writable element and the next readable element.</p>
+              <p>TODO: rename it.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Queue</span>[@specialized(<span class="hljs-type">Short</span>, <span class="hljs-type">Char</span>, <span class="hljs-type">Int</span>, <span class="hljs-type">Float</span>, <span class="hljs-type">Long</span>, <span class="hljs-type">Double</span>, <span class="hljs-type">AnyRef</span>) <span class="hljs-type">A</span>: <span class="hljs-type">ClassTag</span>](<span class="hljs-params">private val size: <span class="hljs-type">Int</span></span>)</span>{self =&gt;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">QueueIssue</span></span>{
+    <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span>
+  }
+
+  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CantDequeueEmptyQueue</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">QueueIssue</span></span>{
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span> = <span class="hljs-string">"Can't dequeue for an empty queue."</span>
+  }</pre></div></div>
             
         </li>
         
@@ -204,11 +198,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Both pointers start from the zero element. They have @volatile annotation, because we need every thread to have an access to the newest value of the variable. Here is the write pointer.</p>
+              <p>The queue is actually a circular buffer and two pointers, which point to the next writable element and the next readable element.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> writePointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Queue</span>[@specialized(<span class="hljs-type">Short</span>, <span class="hljs-type">Char</span>, <span class="hljs-type">Int</span>, <span class="hljs-type">Float</span>, <span class="hljs-type">Long</span>, <span class="hljs-type">Double</span>, <span class="hljs-type">AnyRef</span>) <span class="hljs-type">A</span>: <span class="hljs-type">ClassTag</span>](<span class="hljs-params">private val size: <span class="hljs-type">Int</span></span>)</span>{self =&gt;</pre></div></div>
             
         </li>
         
@@ -219,11 +213,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>And the read pointer.</p>
+              <p>Both pointers start from the zero element. They have @volatile annotation, because we need every thread to have an access to the newest value of the variable. Here is the write pointer.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> readPointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> writePointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
             
         </li>
         
@@ -233,6 +227,21 @@
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>And the read pointer.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> readPointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>We calculate an array size available on the machine.</p>
 
@@ -247,11 +256,11 @@
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>We check the input size. If it is less than one, we make 100000 array (because I want so). </p>
 
@@ -266,11 +275,11 @@
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Then we calculate physical location of the pointers in the array buffer. It should be from 0 to actual array size. So we need to find a reminder of current pointer position and actual array size.</p>
 
@@ -288,11 +297,11 @@
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Here is a buffer array, where we keep all the data.</p>
 
@@ -303,11 +312,11 @@
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>And the next one is for backpressure. I’ll write about it below…</p>
 
@@ -355,11 +364,11 @@
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>do not take an element from the queue</p>
 
@@ -390,11 +399,11 @@
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>do not take an element from the queue</p>
 
@@ -429,11 +438,11 @@
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>The next method extracts next value from the queue.</p>
 
@@ -470,11 +479,11 @@
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>The queue is empty or the next pointer points to an empty slot</p>
 

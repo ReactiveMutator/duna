@@ -1,6 +1,7 @@
-  
+  // # Queue
+  // ### Non-blocking single producer many consumer queue
+
   // Non-blocking algorithms allows threads to access shared state without blocking: locks, mutexes, semaphores etc. A blocking concurrency algorithm is an algorithm which can block the thread until the action can be performed safely.
-  
   
   package duna
   package kernel
@@ -11,6 +12,8 @@
   import scala.reflect.ClassTag 
   import java.util.concurrent.ConcurrentLinkedQueue
   import scala.collection.immutable.SortedMap
+  
+  // TODO: rename it.
   trait QueueIssue{
     val message: String
   }
@@ -18,6 +21,7 @@
   case class CantDequeueEmptyQueue() extends QueueIssue{
     override val message: String = "Can't dequeue for an empty queue."
   }
+
 // The queue is actually a circular buffer and two pointers, which point to the next writable element and the next readable element.
   case class Queue[@specialized(Short, Char, Int, Float, Long, Double, AnyRef) A: ClassTag](private val size: Int){self =>
 // Both pointers start from the zero element. They have @volatile annotation, because we need every thread to have an access to the newest value of the variable. Here is the write pointer.
