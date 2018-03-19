@@ -1,0 +1,29 @@
+{
+    "name": "duna",
+    "version": "0.0.1",
+    "description": "A very raw library for concurrency in scala.",
+    "main": "index.js",
+    "dependencies": {},
+    "devDependencies": {
+        "docco": "^0.8.0",
+        "docsify": "^4.6.9"
+    },
+    "scripts": {
+        "docco": "./node_modules/.bin/docco src/main/scala/duna/*/*.scala",
+        "docsify": "docsify serve ./docs"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ReactiveMutator/duna.git"
+    },
+    "keywords": [
+        "Scala",
+        "Concurrency"
+    ],
+    "author": "Victoria Zakharova",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/ReactiveMutator/duna/issues"
+    },
+    "homepage": "https://github.com/ReactiveMutator/duna#readme"
+}

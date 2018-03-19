@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>Queue.scala</title>
+  <title>Queue</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="../../../../../docco.css" />
@@ -11,13 +11,120 @@
   <div id="container">
     <div id="background"></div>
     
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="../api/DataManager.html">
+                  src/main/scala/duna/api/DataManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/DependencyManager.html">
+                  src/main/scala/duna/api/DependencyManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/EventManager.html">
+                  src/main/scala/duna/api/EventManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Obs.html">
+                  src/main/scala/duna/api/Obs.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Reactive.html">
+                  src/main/scala/duna/api/Reactive.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Rx.html">
+                  src/main/scala/duna/api/Rx.scala
+                </a>
+              
+                
+                <a class="source" href="../api/StateManager.html">
+                  src/main/scala/duna/api/StateManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/SubscriptionManager.html">
+                  src/main/scala/duna/api/SubscriptionManager.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Time.html">
+                  src/main/scala/duna/api/Time.scala
+                </a>
+              
+                
+                <a class="source" href="../api/Var.html">
+                  src/main/scala/duna/api/Var.scala
+                </a>
+              
+                
+                <a class="source" href="Callback.html">
+                  src/main/scala/duna/kernel/Callback.scala
+                </a>
+              
+                
+                <a class="source" href="ComputedList.html">
+                  src/main/scala/duna/kernel/ComputedList.scala
+                </a>
+              
+                
+                <a class="source" href="Events.html">
+                  src/main/scala/duna/kernel/Events.scala
+                </a>
+              
+                
+                <a class="source" href="ProcessingTime.html">
+                  src/main/scala/duna/kernel/ProcessingTime.scala
+                </a>
+              
+                
+                <a class="source" href="Queue.html">
+                  src/main/scala/duna/kernel/Queue.scala
+                </a>
+              
+                
+                <a class="source" href="Task.html">
+                  src/main/scala/duna/kernel/Task.scala
+                </a>
+              
+                
+                <a class="source" href="Timer.html">
+                  src/main/scala/duna/kernel/Timer.scala
+                </a>
+              
+                
+                <a class="source" href="Value.html">
+                  src/main/scala/duna/kernel/Value.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Executor.html">
+                  src/main/scala/duna/processing/Executor.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Worker.html">
+                  src/main/scala/duna/processing/Worker.scala
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
     <ul class="sections">
-        
-          <li id="title">
-              <div class="annotation">
-                  <h1>Queue.scala</h1>
-              </div>
-          </li>
         
         
         
@@ -27,7 +134,8 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h2 id="non-blocking-single-producer-multiple-consumers-queue">Non blocking single producer multiple consumers queue</h2>
+              <h1 id="queue">Queue</h1>
+<h3 id="non-blocking-single-producer-many-consumer-queue">Non-blocking single producer many consumer queue</h3>
 
             </div>
             
@@ -44,9 +152,7 @@
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>
-
-<span class="hljs-keyword">package</span> architect
+            <div class="content"><div class='highlight'><pre>  
   <span class="hljs-keyword">package</span> duna
   <span class="hljs-keyword">package</span> kernel
 
@@ -55,14 +161,7 @@
   <span class="hljs-keyword">import</span> scala.runtime.<span class="hljs-type">ScalaRunTime</span>._
   <span class="hljs-keyword">import</span> scala.reflect.<span class="hljs-type">ClassTag</span> 
   <span class="hljs-keyword">import</span> java.util.concurrent.<span class="hljs-type">ConcurrentLinkedQueue</span>
-  <span class="hljs-keyword">import</span> scala.collection.immutable.<span class="hljs-type">SortedMap</span>
-  <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">QueueIssue</span></span>{
-    <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span>
-  }
-
-  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CantDequeueEmptyQueue</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">QueueIssue</span></span>{
-    <span class="hljs-keyword">override</span> <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span> = <span class="hljs-string">"Can't dequeue for an empty queue."</span>
-  }</pre></div></div>
+  <span class="hljs-keyword">import</span> scala.collection.immutable.<span class="hljs-type">SortedMap</span></pre></div></div>
             
         </li>
         
@@ -73,11 +172,17 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>The queue is actually a circular buffer and two pointers, which point to the next writable element and the next readable element.</p>
+              <p>TODO: rename it.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Queue</span>[@specialized(<span class="hljs-type">Short</span>, <span class="hljs-type">Char</span>, <span class="hljs-type">Int</span>, <span class="hljs-type">Float</span>, <span class="hljs-type">Long</span>, <span class="hljs-type">Double</span>, <span class="hljs-type">AnyRef</span>) <span class="hljs-type">A</span>: <span class="hljs-type">ClassTag</span>](<span class="hljs-params">private val size: <span class="hljs-type">Int</span></span>)</span>{self =&gt;</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">QueueIssue</span></span>{
+    <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span>
+  }
+
+  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CantDequeueEmptyQueue</span>(<span class="hljs-params"></span>) <span class="hljs-keyword">extends</span> <span class="hljs-title">QueueIssue</span></span>{
+    <span class="hljs-keyword">override</span> <span class="hljs-keyword">val</span> message: <span class="hljs-type">String</span> = <span class="hljs-string">"Can't dequeue for an empty queue."</span>
+  }</pre></div></div>
             
         </li>
         
@@ -88,12 +193,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Both pointers start from the zero element. They have <a href="http://tutorials.jenkov.com/java-concurrency/volatile.html">@volatile</a> annotation, because we need every thread to have an access to the newest value of the variable.
-Here is the write pointer.</p>
+              <p>The queue is actually a circular buffer and two pointers, which point to the next writable element and the next readable element.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> writePointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Queue</span>[@specialized(<span class="hljs-type">Short</span>, <span class="hljs-type">Char</span>, <span class="hljs-type">Int</span>, <span class="hljs-type">Float</span>, <span class="hljs-type">Long</span>, <span class="hljs-type">Double</span>, <span class="hljs-type">AnyRef</span>) <span class="hljs-type">A</span>: <span class="hljs-type">ClassTag</span>](<span class="hljs-params">private val size: <span class="hljs-type">Int</span></span>)</span>{self =&gt;</pre></div></div>
             
         </li>
         
@@ -104,11 +208,11 @@ Here is the write pointer.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>And the read pointer.</p>
+              <p>Both pointers start from the zero element. They have @volatile annotation, because we need every thread to have an access to the newest value of the variable. Here is the write pointer.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> readPointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> writePointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
             
         </li>
         
@@ -118,6 +222,21 @@ Here is the write pointer.</p>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>And the read pointer.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-meta">@volatile</span> <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> readPointer: <span class="hljs-type">Int</span> = <span class="hljs-number">0</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>We calculate an array size available on the machine.</p>
 
@@ -129,11 +248,11 @@ Here is the write pointer.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Hard coded values are: 32bits is Int size, 4 - memory share
 TODO: change integer zite to A size</p>
@@ -146,13 +265,13 @@ TODO: change integer zite to A size</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>We check the input size. If it is less than one, we make 100000 array (because I want so).</p>
+              <p>We check the input size. If it is less than one, we make 100000 array (because I want so). </p>
 
             </div>
             
@@ -165,11 +284,11 @@ TODO: change integer zite to A size</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Then we calculate physical location of the pointers in the array buffer. It should be from 0 to actual array size. So we need to find a reminder of current pointer position and actual array size.</p>
 
@@ -187,11 +306,11 @@ TODO: change integer zite to A size</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>Here is a buffer array, where we keep all the data.</p>
 
@@ -202,11 +321,11 @@ TODO: change integer zite to A size</p>
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>And the next one is for backpressure. I’ll write about it below…</p>
 
@@ -234,14 +353,13 @@ TODO: change integer zite to A size</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
-              <p>Whenever a write pointer is bigger than array size, we put next elements into the tmpStore. It is a backpressure strategy. If a producer is faster than consumer, then the default array is not enough. We start using tmpStore, which help us under heavy load. But it can cause an OutOfMemoryException exeption. Type of the tmpStore is ConcurrentLinkedQueue, so it is not limited and can be dynamically resized. Why we didn’t do it before?
-Because any linked list based data structure with unknown length at runtime replaces itself with a new allocated structure when the capacity is exceeded. A new structure is allocated and a previous one is collected multiple times. This process can generate a lot of garbage and lead to memory leak.</p>
+              <p>Whenever a write pointer is bigger than array size, we put next elements into the tmpStore. It is a backpressure strategy. If a producer is faster than consumer, then the default array is not enought. We start using tmpStore, which help us under heavy load. But it can cause an OutOfMemoryException exeption. Type of the tmpStore is ConcurrentLinkedQueue, so it is not limited and can be dynamically resized. Why we didn’t do it before? Because any linked list based data structure with unknown length at runtime replaces itself with a new allocated structure when the capacity is exceeded. A new structure is allocated and a previous one is collected multiple times. This process can generate a lot of garbage and lead to memory leak.</p>
 
             </div>
             
@@ -250,11 +368,11 @@ Because any linked list based data structure with unknown length at runtime repl
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>The queue is full, can’t rewrite an element which hasn’t been read</p>
 
@@ -269,11 +387,11 @@ Because any linked list based data structure with unknown length at runtime repl
         </li>
         
         
-        <li id="section-14">
+        <li id="section-15">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-14">&#182;</a>
+                <a class="pilcrow" href="#section-15">&#182;</a>
               </div>
               <p>Enqueue a new element</p>
 
@@ -286,11 +404,11 @@ Because any linked list based data structure with unknown length at runtime repl
         </li>
         
         
-        <li id="section-15">
+        <li id="section-16">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-15">&#182;</a>
+                <a class="pilcrow" href="#section-16">&#182;</a>
               </div>
               <p>Move writePointer to the next slot</p>
 
@@ -354,11 +472,11 @@ Because any linked list based data structure with unknown length at runtime repl
         </li>
         
         
-        <li id="section-16">
+        <li id="section-17">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-16">&#182;</a>
+                <a class="pilcrow" href="#section-17">&#182;</a>
               </div>
               <p>The next method extracts next value from the queue.</p>
 
@@ -395,13 +513,13 @@ Because any linked list based data structure with unknown length at runtime repl
         </li>
         
         
-        <li id="section-17">
+        <li id="section-18">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-17">&#182;</a>
+                <a class="pilcrow" href="#section-18">&#182;</a>
               </div>
-              <p>The queue is empty or the next pointer points to an empty slot.</p>
+              <p>The queue is empty or the next pointer points to an empty slot</p>
 
             </div>
             

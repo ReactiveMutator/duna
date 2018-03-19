@@ -1,4 +1,4 @@
-package architect
+
 package duna
 
 import duna.kernel.{Queue, QueueIssue, CantDequeueEmptyQueue }

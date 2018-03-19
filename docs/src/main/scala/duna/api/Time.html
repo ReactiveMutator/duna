@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Time.scala</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../../../../../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="DataManager.html">
+                  src/main/scala/duna/api/DataManager.scala
+                </a>
+              
+                
+                <a class="source" href="DependencyManager.html">
+                  src/main/scala/duna/api/DependencyManager.scala
+                </a>
+              
+                
+                <a class="source" href="EventManager.html">
+                  src/main/scala/duna/api/EventManager.scala
+                </a>
+              
+                
+                <a class="source" href="Obs.html">
+                  src/main/scala/duna/api/Obs.scala
+                </a>
+              
+                
+                <a class="source" href="Reactive.html">
+                  src/main/scala/duna/api/Reactive.scala
+                </a>
+              
+                
+                <a class="source" href="Rx.html">
+                  src/main/scala/duna/api/Rx.scala
+                </a>
+              
+                
+                <a class="source" href="StateManager.html">
+                  src/main/scala/duna/api/StateManager.scala
+                </a>
+              
+                
+                <a class="source" href="SubscriptionManager.html">
+                  src/main/scala/duna/api/SubscriptionManager.scala
+                </a>
+              
+                
+                <a class="source" href="Time.html">
+                  src/main/scala/duna/api/Time.scala
+                </a>
+              
+                
+                <a class="source" href="Var.html">
+                  src/main/scala/duna/api/Var.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Callback.html">
+                  src/main/scala/duna/kernel/Callback.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/ComputedList.html">
+                  src/main/scala/duna/kernel/ComputedList.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Events.html">
+                  src/main/scala/duna/kernel/Events.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/ProcessingTime.html">
+                  src/main/scala/duna/kernel/ProcessingTime.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Queue.html">
+                  src/main/scala/duna/kernel/Queue.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Task.html">
+                  src/main/scala/duna/kernel/Task.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Timer.html">
+                  src/main/scala/duna/kernel/Timer.scala
+                </a>
+              
+                
+                <a class="source" href="../kernel/Value.html">
+                  src/main/scala/duna/kernel/Value.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Executor.html">
+                  src/main/scala/duna/processing/Executor.scala
+                </a>
+              
+                
+                <a class="source" href="../processing/Worker.html">
+                  src/main/scala/duna/processing/Worker.scala
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Time.scala</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">package</span> duna
+<span class="hljs-keyword">package</span> api
+
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Time</span>(<span class="hljs-params">value: <span class="hljs-type">Long</span> = <span class="hljs-type">System</span>.nanoTime(</span>), <span class="hljs-title">timeFrame</span></span>: <span class="hljs-type">Long</span> = <span class="hljs-number">0</span>) {self =&gt;
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">&lt;</span></span>(other: <span class="hljs-type">Time</span>): <span class="hljs-type">Boolean</span> = 
+    self.value &lt; other.value
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compare</span></span>(other: <span class="hljs-type">Time</span>) = 
+    self.value compare other.value
+
+}
+
+<span class="hljs-keyword">case</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Interval</span>(<span class="hljs-params">start: <span class="hljs-type">Time</span>, end: <span class="hljs-type">Time</span></span>)</span>{self =&gt;
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">contain</span></span>(time: <span class="hljs-type">Time</span>): <span class="hljs-type">Boolean</span> = 
+    start.value &lt; time.value &amp;&amp; time.value &gt; end.value
+
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compare</span></span>(other: <span class="hljs-type">Interval</span>) = 
+    start compare other.start
+
+}
+<span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">IntervalOrdering</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Ordering</span>[<span class="hljs-type">Interval</span>] </span>{
+
+  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">compare</span></span>(a:<span class="hljs-type">Interval</span>, b:<span class="hljs-type">Interval</span>) = a compare b
+
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

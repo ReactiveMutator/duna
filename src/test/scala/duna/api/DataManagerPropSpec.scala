@@ -1,5 +1,5 @@
 
-package architect
+
 package duna
 
 import org.scalatest._
